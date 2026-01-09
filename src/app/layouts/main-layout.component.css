@@ -1,0 +1,165 @@
+.hau-header {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1001; /* Cao hơn sidebar */
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 8px 24px 0 24px;
+  min-height: 70px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Sidebar cố định bên trái, dưới header */
+.menu-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 256px; /* đúng bằng nzWidth của nz-sider */
+  height: 100vh;
+  z-index: 1000;
+  background: #001529;
+  color: #fff;
+  overflow-y: auto;
+  padding-top: 70px; /* đúng bằng min-height của .hau-header */
+}
+
+/* Layout nội dung chính chừa chỗ cho sidebar và header */
+.app-layout {
+  min-height: 100vh;
+  margin-left: 256px; /* đúng bằng width của sidebar */
+  padding-top: 70px;  /* đúng bằng min-height của header */
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #002140;
+}
+.sidebar-logo img {
+  height: 32px;
+  margin-right: 8px;
+}
+.sidebar-logo h1 {
+  color: #fff;
+  font-size: 18px;
+  margin: 0;
+}
+
+.hau-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hau-logo {
+  height: 48px;
+  margin-right: 8px;
+}
+
+.hau-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hau-name {
+  color: #0095dd;
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.hau-slogan {
+  color: #444;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.hau-header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.hau-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hau-nav a {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.hau-nav span {
+  color: #888;
+}
+
+.hau-search {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.hau-search input {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  font-size: 15px;
+  height: 28px;
+}
+
+.hau-search-btn {
+  border: 1px solid #ccc;
+  border-left: none;
+  background: #f5f5f5;
+  border-radius: 0 4px 4px 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 18px;
+  height: 28px;
+}
+
+.hau-account {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+  position: relative;
+  font-size: 15px;
+  color: #444;
+}
+
+.hau-account-dropdown {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 4px 12px;
+  margin-left: 8px;
+}
+
+.hau-account-dropdown a {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.inner-content {
+  margin: 24px;
+  background: #fff;
+  min-height: 280px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border-radius: 8px;
+}
+

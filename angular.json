@@ -22,9 +22,15 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
+              "src/theme.less",
               "src/styles.css"
             ],
             "scripts": [],
@@ -96,5 +102,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "fbf332d9-3060-4071-a5d1-d213e8b0fc92"
   }
 }

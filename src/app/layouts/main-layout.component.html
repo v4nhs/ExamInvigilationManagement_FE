@@ -1,0 +1,85 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-submenu nzOpen nzTitle="Lịch thi sinh viên" nzIcon="schedule">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/schedule">Ngày thi</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/courses">Học phần</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu nzOpen nzTitle="Phân công coi thi" nzIcon="form">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/assign">Phân công</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/lecturers">Cán bộ coi thi</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-submenu nzOpen nzTitle="Đối soát" nzIcon="bar-chart">
+        <ul>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/payment">Tính tiền</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/payouts">Thống kê</a>
+          </li>
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/reports">Báo cáo</a>
+          </li>
+        </ul>
+      </li>
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/user-management">Quản lý người dùng</a>
+      </li>
+      <li nz-menu-item nzMatchRouter>
+        <a routerLink="/settings">Thiết lập</a>
+      </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <header class="hau-header">
+        <div class="hau-header-left">
+          <img src="https://hau.edu.vn/images/logo.png" alt="Logo" class="hau-logo" />
+          <div class="hau-title">
+            <div class="hau-name">ĐẠI HỌC KIẾN TRÚC HÀ NỘI</div>
+            <div class="hau-slogan">HANOI ARCHITECTURAL UNIVERSITY</div>
+          </div>
+        </div>
+        <div class="hau-header-right">
+          <nav class="hau-nav">
+            <a href="#">Lịch tuần</a>
+            <span>|</span>
+            <a href="#">E-mail</a>
+            <span>|</span>
+            <a href="#">Liên hệ</a>
+            <span>|</span>
+            <a href="#">Sơ đồ trang</a>
+          </nav>
+          <div class="hau-search">
+            <input type="text" placeholder="Tìm kiếm" />
+            <button class="hau-search-btn">&#128269;</button>
+          </div>
+          <div class="hau-account">
+            <span>Tài khoản</span>
+            <div class="hau-account-dropdown">
+              <a href="#">Đăng nhập</a>
+            </div>
+          </div>
+        </div>
+      </header>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+
