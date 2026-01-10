@@ -1,0 +1,12 @@
+/* Fix z-index for toast notifications to appear above header */
+:global(.ant-message) {
+  z-index: 2000 !important;
+}
+
+:global(.ant-message-notice) {
+  z-index: 2000 !important;
+}
+
+:global(.ant-message-notice-content) {
+  z-index: 2000 !important;
+}

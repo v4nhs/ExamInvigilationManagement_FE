@@ -1,0 +1,50 @@
+<div class="user-list-container">
+  <div class="page-header">
+    <h2>Danh sách người dùng</h2>
+    <button class="add-btn" (click)="openAddForm()">+ Thêm người dùng</button>
+  </div>
+
+  <table *ngIf="users.length > 0; else emptyBlock">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tên đăng nhập</th>
+        <th>Email</th>
+        <th>Vai trò</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <span class="role-badge" *ngFor="let role of user.roles; let last = last">
+            {{ role.name }}<span *ngIf="!last">, </span>
+          </span>
+        </td>
+        <td>
+          <button class="edit-btn" (click)="editUser(user)">Sửa</button>
+          <button class="delete-btn" (click)="deleteUser(user)" [disabled]="deleting === user.id">
+            {{ deleting === user.id ? 'Đang xóa...' : 'Xóa' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #emptyBlock>
+    <div class="empty">Không có người dùng nào.</div>
+  </ng-template>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <!-- Modal Thêm/Sửa người dùng -->
+  <app-user-add 
+    *ngIf="showAddForm" 
+    [editUserId]="editingUserId"
+    (close)="closeAddForm()" 
+    (saved)="onUserSaved()">
+  </app-user-add>
+</div>

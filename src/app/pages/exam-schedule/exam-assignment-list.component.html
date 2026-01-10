@@ -1,0 +1,60 @@
+<div class="assignment-list-container">
+  <h2>Phân công coi thi</h2>
+  
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="fetchSchedules()">Thử lại</button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <div class="table-responsive" *ngIf="!error && !loading">
+    <table class="assignment-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Mã HP</th>
+          <th>Tên HP</th>
+          <th>Thứ</th>
+          <th>Ngày thi</th>
+          <th>Giờ thi</th>
+          <th>Giờ kết thúc</th>
+          <th>Hình thức thi</th>
+          <th>Số cán bộ coi thi</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="loading" class="loading-row">
+          <td colspan="10" class="text-center">Đang tải dữ liệu...</td>
+        </tr>
+        <tr *ngIf="!loading && schedules.length === 0" class="no-data">
+          <td colspan="10" class="text-center">Không có lịch thi nào</td>
+        </tr>
+        <tr *ngFor="let schedule of schedules; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ schedule.courseCode }}</td>
+          <td class="course-name">{{ schedule.courseName }}</td>
+          <td>{{ schedule.examDay }}</td>
+          <td>{{ schedule.examDate | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ schedule.examTime }}</td>
+          <td>{{ schedule.endTime }}</td>
+          <td>
+            <span class="exam-type-badge" [ngClass]="'type-' + schedule.examType.toLowerCase()">
+              {{ schedule.examType === 'WRITTEN' ? 'Thi viết' : 'Hình thức khác' }}
+            </span>
+          </td>
+          <td>{{ schedule.invigilatorCount }}</td>
+          <td>
+            <button class="action-btn assign-btn" (click)="goToAssignment(schedule.id)">
+              Phân công
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

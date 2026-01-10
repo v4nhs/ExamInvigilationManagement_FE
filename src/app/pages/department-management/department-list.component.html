@@ -1,0 +1,43 @@
+<div class="department-list-container">
+  <div class="page-header">
+    <h2>Danh sách khoa</h2>
+    <button class="add-btn" (click)="openAddForm()">+ Thêm khoa mới</button>
+  </div>
+  <table *ngIf="departments.length > 0; else emptyBlock">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tên khoa</th>
+        <th>Mã khoa</th>
+        <th>Mô tả</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let d of departments; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ d.name }}</td>
+        <td>{{ d.code }}</td>
+        <td>{{ d.description }}</td>
+        <td>
+          <button class="edit-btn" (click)="openAddForm()" [disabled]="!d.id">Sửa</button>
+          <button class="delete-btn" (click)="deleteDepartment(d.id)" [disabled]="!d.id || deleting === d.id">
+            {{ deleting === d.id ? 'Đang xóa...' : 'Xóa' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-template #emptyBlock>
+    <div class="empty">Không có khoa nào.</div>
+  </ng-template>
+  <div *ngIf="loading">Đang tải...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <app-department-add 
+    *ngIf="showAddForm" 
+    [editDepartmentId]="editingDepartmentId"
+    (close)="closeAddForm()" 
+    (saved)="onDepartmentSaved()">
+  </app-department-add>
+</div>

@@ -33,6 +33,8 @@ import { User } from '../models/auth.models';
 export class MainLayoutComponent implements OnInit {
   isCollapsed = false;
   showDropdown = false;
+  isMobile = false;
+  sidebarOpen = false;
   
   // Khai báo kiểu dữ liệu rõ ràng (User | null hoặc any)
   currentUser: User | null = null; 
@@ -40,14 +42,24 @@ export class MainLayoutComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    this.checkIfMobile();
+    window.addEventListener('resize', () => this.checkIfMobile());
+  }
 
   ngOnInit() {
-    // Lấy user hiện tại khi load trang
-    this.currentUser = this.authService.getCurrentUser();
+    // First, try to get user from service (from token)
+    const user = this.authService.getCurrentUser();
+    console.log('🔍 getCurrentUser() result:', user);
+    
+    if (user) {
+      this.currentUser = user;
+      console.log('✅ User loaded from getCurrentUser:', this.currentUser);
+    }
 
-    // 2. SỬA LỖI TS7006: Thêm kiểu dữ liệu (user: any) hoặc (user: User)
+    // Also subscribe to observable for real-time updates
     this.authService.currentUser$.subscribe((user: User | null) => {
+      console.log('📡 Observable updated with user:', user);
       this.currentUser = user;
     });
   }
@@ -58,5 +70,55 @@ export class MainLayoutComponent implements OnInit {
     this.showDropdown = false;
     // Chuyển hướng về login
     this.router.navigate(['/login']);
+  }
+
+  // ===== ROLE CHECKING METHODS =====
+  hasRole(role: string): boolean {
+    if (!this.currentUser) {
+      console.warn('⚠️ currentUser is null');
+      return false;
+    }
+    const userRole = this.currentUser.role?.toUpperCase() || '';
+    const result = userRole === role.toUpperCase();
+    console.log(`🔍 hasRole('${role}'): user has '${userRole}' -> ${result}`);
+    return result;
+  }
+
+  hasAnyRole(...roles: string[]): boolean {
+    if (!this.currentUser) {
+      console.warn('⚠️ currentUser is null');
+      return false;
+    }
+    const userRole = this.currentUser.role?.toUpperCase() || '';
+    const result = roles.some(role => role.toUpperCase() === userRole);
+    console.log(`🔍 hasAnyRole(${roles.join(', ')}): user has '${userRole}' -> ${result}`);
+    return result;
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ROLE_ADMIN');
+  }
+
+  isDepartment(): boolean {
+    return this.hasRole('ROLE_DEPARTMENT');
+  }
+
+  isAccounting(): boolean {
+    return this.hasRole('ROLE_ACCOUNTING');
+  }
+
+  checkIfMobile(): void {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.sidebarOpen = false;
+    }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  isStaffOrAbove(): boolean {
+    return this.hasAnyRole('ROLE_ADMIN', 'ROLE_DEPARTMENT', 'ROLE_STAFF');
   }
 }

@@ -27,9 +27,9 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  private fb = inject(NonNullableFormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  public fb = inject(NonNullableFormBuilder);
+  public authService = inject(AuthService);
+  public router = inject(Router);
 
   validateForm = this.fb.group({
     username: this.fb.control('', [Validators.required]),
@@ -37,8 +37,8 @@ export class LoginComponent {
     remember: this.fb.control(true)
   });
 
-  isLoading = false;
-  errorMessage: string | null = null;
+  public isLoading = false;
+  public errorMessage: string | null = null;
 
   submitForm(): void {
     if (this.validateForm.valid) {
@@ -67,8 +67,12 @@ export class LoginComponent {
             }
 
             // 2. CHUYỂN TRANG
-            // Chuyển về user-management hoặc home
-            this.router.navigate(['/user-management']); 
+            // Chuyển về trang lịch thi
+            this.router.navigate(['/exam-schedules']).then(() => {
+              console.log('✅ Navigation successful');
+            }).catch((err) => {
+              console.error('❌ Navigation failed:', err);
+            }); 
           } else {
              // Trường hợp API trả về success nhưng không có token
              this.errorMessage = 'Lỗi: Không nhận được Token xác thực!';

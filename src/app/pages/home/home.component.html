@@ -1,5 +1,41 @@
 <!-- Giao diện trang chủ mô phỏng theo ảnh đính kèm -->
 <div class="welcome">Chào mừng quý vị đến với Cổng thông tin của trường</div>
+
+<!-- Section Lịch thi gần nhất -->
+<div class="upcoming-exams-section" *ngIf="upcomingExams.length > 0">
+  <div class="section-title">
+    <i class="icon">📋</i>
+    <span>LỊCH THI GẦN NHẤT</span>
+  </div>
+  <div class="exams-container">
+    <div *ngIf="isLoading" class="loading-message">Đang tải...</div>
+    <table class="exams-table" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>MÃ HP</th>
+          <th>TÊN HỌC PHẦN</th>
+          <th>NGÀY THI</th>
+          <th>GIỜ THI</th>
+          <th>HÌNH THỨC THI</th>
+          <th>SỐ CẦN BÔ COI THI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let exam of upcomingExams; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ exam.courseCode }}</td>
+          <td>{{ exam.courseName }}</td>
+          <td>{{ exam.examDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ exam.examTime }}</td>
+          <td><span class="badge">{{ exam.examType || 'WRITTEN' }}</span></td>
+          <td>{{ exam.invigilatorCount || 0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <div class="main-content">
   <div class="left-panel">
     <div class="panel-title">TIN TỨC MỚI NHẤT</div>
@@ -101,107 +137,3 @@
     </div>
   </div>
 </div>
-<!-- Thêm các phần khác nếu cần -->
-<div class="welcome">Chào mừng quý vị đến với Cổng thông tin của trường</div>
-<div class="main-content">
-  <div class="left-panel">
-    <div class="panel-title">TIN TỨC MỚI NHẤT</div>
-    <div class="news-list">
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Thông báo tổ chức Cuộc thi "Sinh viên trường Đại học Kiến trúc Hà Nội với ý tưởng khởi nghiệp" năm 2025 (HAU_STARUP-2025)</div>
-          <div class="news-date">09/01/2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Thông báo hoàn trả tiền BHYT năm 2025 cho các trường hợp không gia hạn được BHYT năm 2026 (đợt 2, đợt 3)</div>
-          <div class="news-date">08/01/2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">THÔNG BÁO THỜI KHOÁ BIỂU (CHÍNH THỨC) ĐỢT 1 HỌC KỲ 2 - NĂM HỌC 2025 - 2026</div>
-          <div class="news-date">05/01/2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">TB về việc lùi thời gian nhận "trực tiếp" các đơn: đăng ký/ hủy đối với các HP bổ sung, học vượt, các HP tương đương, các HP Ngoại ngữ</div>
-          <div class="news-date">25/12/2025</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">HƯỚNG DẪN ĐĂNG KÝ HỌC PHẦN THEO ĐIỀU KIỆN TIÊN QUYẾT THUỘC KHOA LÝ LUẬN CHÍNH TRỊ</div>
-          <div class="news-date">24/12/2025</div>
-        </div>
-      </div>
-      <div class="see-all">Xem tất cả</div>
-    </div>
-  </div>
-  <div class="center-panel">
-    <div class="panel-title">THÔNG BÁO</div>
-    <div class="news-list">
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Quyết định trao học bổng của Công ty TNHH TOTO Việt Nam cho sinh viên khoa Kiến trúc</div>
-          <div class="news-date">18/12/2025</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Quyết định trao học bổng của Công ty Cổ phần EUROWINDOW HOLDING (EWH) cho sinh viên khoa Kiến trúc</div>
-          <div class="news-date">18/12/2025</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Quyết định khen thưởng cho sinh viên đạt giải trong cuộc thi Olympic Vật lý toàn quốc lần thứ XXVII – năm 2025 (SphO 27)</div>
-          <div class="news-date">18/12/2025</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Quyết định về việc cấp học bổng khuyến khích học tập cho sinh viên hệ chính quy học kỳ 1 năm học 2025-2026</div>
-          <div class="news-date">10/10/2025</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <img src="assets/logo.png" class="news-logo" />
-        <div class="news-content">
-          <div class="news-title">Quyết định về việc công nhận danh hiệu thi đua và khen thưởng cho sinh viên hệ chính quy học kỳ II năm học 2024-2025</div>
-          <div class="news-date">10/10/2025</div>
-        </div>
-      </div>
-      <div class="see-all">Xem tất cả</div>
-    </div>
-  </div>
-  <div class="right-panel">
-    <div class="panel-title">VIDEO HƯỚNG DẪN</div>
-    <div class="video-box">
-      <iframe width="100%" height="180" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="calendar-box">
-      <div class="calendar-title">Tháng 1 2026</div>
-      <table class="calendar">
-        <tr><th>CN</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th></tr>
-        <tr><td>28</td><td>29</td><td>30</td><td>31</td><td>1</td><td>2</td><td>3</td></tr>
-        <tr><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td class="today">9</td><td>10</td></tr>
-        <tr><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td></tr>
-        <tr><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td></tr>
-        <tr><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td></tr>
-      </table>
-    </div>
-  </div>
-</div>
-<!-- Thêm các phần khác nếu cần -->

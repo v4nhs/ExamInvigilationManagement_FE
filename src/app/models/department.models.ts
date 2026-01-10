@@ -1,0 +1,26 @@
+export interface Department {
+  id: number;
+  name: string;
+  code: string;
+  description?: string;
+}
+
+export interface DepartmentRequest {
+  name: string;
+  code: string;
+  description?: string;
+}
+
+export interface DepartmentResponse {
+  id: number;
+  name: string;
+  code: string;
+  description?: string;
+}
+
+export interface ApiResponse<T> {
+  code: number;
+  message: string;
+  result: T;
+  success: boolean;
+}

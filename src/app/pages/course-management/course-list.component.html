@@ -1,0 +1,83 @@
+<div class="course-list-container">
+  <div class="page-header">
+    <h2>Danh sách học phần</h2>
+    <div class="header-actions">
+      <button class="add-btn" (click)="openAddForm()">+ Thêm học phần</button>
+      <button class="import-btn" (click)="fileInput.click()">⬆ Import từ file</button>
+      <input type="file" #fileInput hidden accept=".xlsx,.xls" (change)="onFileSelected($event)" />
+    </div>
+  </div>
+
+  <table *ngIf="courses.length > 0; else emptyBlock">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Mã học phần</th>
+        <th>Tên học phần</th>
+        <th>Số tín chỉ</th>
+        <th>Khoa</th>
+        <th>Mô tả</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let course of courses; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td><span class="course-code">{{ course.code }}</span></td>
+        <td>{{ course.name }}</td>
+        <td><span class="credits-badge">{{ course.credits }} TC</span></td>
+        <td>{{ course.departmentName || 'N/A' }}</td>
+        <td>{{ course.description || '-' }}</td>
+        <td>
+          <button class="edit-btn" (click)="openAddForm()">Sửa</button>
+          <button class="delete-btn" (click)="deleteCourse(course.id)" [disabled]="deleting === course.id">
+            {{ deleting === course.id ? 'Đang xóa...' : 'Xóa' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #emptyBlock>
+    <div class="empty">Không có học phần nào.</div>
+  </ng-template>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <!-- Import Dialog -->
+  <div *ngIf="showImportDialog" class="import-dialog-overlay">
+    <div class="import-dialog">
+      <div class="dialog-header">
+        <h3>Nhập học phần từ file</h3>
+      </div>
+      <div class="dialog-body">
+        <div class="form-group">
+          <label>Chọn khoa</label>
+          <select [(ngModel)]="selectedDepartmentId" class="department-select">
+            <option value="0" disabled>-- Chọn khoa --</option>
+            <option *ngFor="let dept of departments" [value]="dept.id">
+              {{ dept.name }}
+            </option>
+          </select>
+        </div>
+        <div class="file-info">
+          <p><strong>File:</strong> {{ importFile?.name }}</p>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="cancel-btn" (click)="closeImportDialog()" [disabled]="importing">Hủy</button>
+        <button class="confirm-btn" (click)="confirmImport()" [disabled]="importing">
+          {{ importing ? 'Đang import...' : 'Import' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-course-add 
+    *ngIf="showAddForm" 
+    [editCourseId]="editingCourseId"
+    (close)="closeAddForm()" 
+    (saved)="onCourseSaved()">
+  </app-course-add>
+</div>
+

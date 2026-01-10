@@ -4,6 +4,114 @@ body, html {
   font-family: Arial, Helvetica, sans-serif;
   background: #f5f5f5;
 }
+
+/* Upcoming Exams Section */
+.upcoming-exams-section {
+  margin: 24px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.exams-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.exams-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 800px;
+}
+
+.exams-table thead {
+  background: linear-gradient(90deg, #5b5fc7 0%, #6c6ce5 100%);
+  color: white;
+}
+
+.exams-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+  white-space: nowrap;
+}
+
+.exams-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  word-break: break-word;
+}
+
+.exams-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.loading-message {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upcoming-exams-section {
+    margin: 16px;
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .exams-table {
+    font-size: 15px;
+    min-width: 700px;
+  }
+
+  .exams-table th,
+  .exams-table td {
+    padding: 14px 10px;
+  }
+
+  .exams-table th {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
 .header {
   display: flex;
   align-items: center;

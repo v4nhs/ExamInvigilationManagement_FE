@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  // 1. SỬA: Chuyển hướng mặc định về Login thay vì Home
+  // 1. Chuyển hướng mặc định về trang lịch thi
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/exam-schedules',
     pathMatch: 'full'
   },
   
@@ -19,6 +20,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./layouts/main-layout.component').then((m: any) => m.MainLayoutComponent),
+    canActivate: [authGuard],
     children: [
       {
         path: 'home',
@@ -29,25 +31,17 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
-        path: 'user-management',
-        loadComponent: () => import('./pages/user-management/user-list.component').then(m => m.UserListComponent)
+        path: 'department-management',
+        loadComponent: () => import('./pages/department-management/department-list.component').then(m => m.DepartmentListComponent)
       },
       {
-        path: 'user-management/add',
-        loadComponent: () => import('./pages/user-management/user-add.component').then(m => m.UserAddComponent)
+        path: 'user-management',
+        loadComponent: () => import('./pages/user-management/user-list.component').then(m => m.UserListComponent)
       },
       // Lưu ý: Route cụ thể 'roles' phải đặt TRƯỚC route có tham số ':id'
       {
         path: 'user-management/roles',
         loadComponent: () => import('./pages/role-management/role-list.component').then(m => m.RoleListComponent)
-      },
-      {
-        path: 'user-management/roles/add',
-        loadComponent: () => import('./pages/role-management/role-form.component').then(m => m.RoleFormComponent)
-      },
-      {
-        path: 'user-management/roles/edit/:id',
-        loadComponent: () => import('./pages/role-management/role-form.component').then(m => m.RoleFormComponent)
       },
       // Route có tham số :id (đặt sau các route cụ thể)
       {
@@ -58,11 +52,31 @@ export const routes: Routes = [
         path: 'user-management/:id/edit',
         loadComponent: () => import('./pages/user-management/user-edit.component').then(m => m.UserEditComponent)
       },
+      {
+        path: 'courses',
+        loadComponent: () => import('./pages/course-management/course-list.component').then(m => m.CourseListComponent)
+      },
+      {
+        path: 'lecturers',
+        loadComponent: () => import('./pages/lecturer-management/lecturer-list.component').then(m => m.LecturerListComponent)
+      },
+      {
+        path: 'exam-schedules',
+        loadComponent: () => import('./pages/exam-schedule/exam-schedule-list.component').then(m => m.ExamScheduleListComponent)
+      },
+      {
+        path: 'exam-assignment',
+        loadComponent: () => import('./pages/exam-schedule/exam-assignment-list.component').then(m => m.ExamAssignmentListComponent)
+      },
+      {
+        path: 'exam-assignment/:id',
+        loadComponent: () => import('./pages/exam-schedule/exam-assignment.component').then(m => m.ExamAssignmentComponent)
+      },
     ]
   },
 
   {
     path: '**',
-    redirectTo: '/login'
+    redirectTo: 'login'
   }
 ];

@@ -1,0 +1,45 @@
+<div class="role-list-container">
+  <div class="page-header">
+    <h2>Quản lý vai trò</h2>
+    <button class="add-btn" (click)="openAddForm()">+ Thêm vai trò</button>
+  </div>
+
+  <table *ngIf="roles.length > 0; else emptyBlock">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tên vai trò</th>
+        <th>Mô tả</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of roles; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <span class="role-badge">{{ role.name }}</span>
+        </td>
+        <td>{{ role.description || 'Không có mô tả' }}</td>
+        <td>
+          <button class="edit-btn" (click)="openAddForm()">Sửa</button>
+          <button class="delete-btn" (click)="deleteRole(role)" [disabled]="deleting === role.id">
+            {{ deleting === role.id ? 'Đang xóa...' : 'Xóa' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #emptyBlock>
+    <div class="empty">Không có vai trò nào.</div>
+  </ng-template>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <app-role-form 
+    *ngIf="showAddForm" 
+    [editRoleId]="editingRoleId"
+    (close)="closeAddForm()" 
+    (saved)="onRoleSaved()">
+  </app-role-form>
+</div>

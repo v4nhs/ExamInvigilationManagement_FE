@@ -85,3 +85,14 @@
 .login-form-button {
   width: 100%;
 }
+
+.error-message {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 4px;
+  color: #d32f2f;
+  font-size: 14px;
+  text-align: center;
+}

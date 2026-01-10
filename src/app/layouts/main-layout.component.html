@@ -1,28 +1,107 @@
 <nz-layout class="app-layout">
-  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
+  <!-- Header with Logo and School Name at Top, Menu Navigation in same row -->
+  <header class="hau-top-header">
+    <button class="menu-toggle-btn" (click)="toggleSidebar()" *ngIf="isMobile">
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+    </button>
+    <div class="hau-logo-section">
+      <img
+        src="data:image/png;base64,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"
+        alt="Logo" class="hau-logo-image" />
+      <div class="hau-title-section">
+        <div class="hau-name">ĐẠI HỌC KIẾN TRÚC HÀ NỘI</div>
+        <div class="hau-slogan">HANOI ARCHITECTURAL UNIVERSITY</div>
+      </div>
+    </div>
+    <div class="hau-header-right">
+      <nav class="hau-nav">
+        <a routerLink="/" routerLinkActive="active">Trang chủ</a>
+        <span>|</span>
+        <a href="#">Lịch tuần</a>
+        <span>|</span>
+        <a href="#">E-mail</a>
+        <span>|</span>
+        <a href="#">Liên hệ</a>
+        <span>|</span>
+        <a href="#">Sơ đồ trang</a>
+      </nav>
+      <div class="hau-search">
+        <input type="text" placeholder="Tìm kiếm" />
+        <button class="hau-search-btn">&#128269;</button>
+      </div>
+      <div class="hau-account" *ngIf="currentUser; else loginBlock">
+        <ul class="account-menu">
+          <li class="account-name" (click)="showDropdown = !showDropdown">
+            {{ currentUser.username }}
+            <span style="font-size: 10px; margin-left: 4px;">▼</span>
+            <ul class="account-dropdown" *ngIf="showDropdown">
+              <li class="account-role">Vai trò: {{ currentUser.role || 'ADMIN' }}</li>
+              <li class="divider"></li>
+              <li class="account-logout" (click)="logout()">Đăng xuất</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <ng-template #loginBlock>
+        <div class="hau-account">
+          <span>Tài khoản</span>
+          <div class="hau-account-dropdown">
+            <a routerLink="/login">Đăng nhập</a>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </header>
+
+  <nz-sider class="menu-sidebar" [ngClass]="{ 'open': sidebarOpen }" nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null">
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <!-- VISIBLE TO ALL: Lịch thi sinh viên -->
       <li nz-submenu nzOpen nzTitle="Lịch thi sinh viên" nzIcon="schedule">
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/schedule">Ngày thi</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/courses">Học phần</a>
+          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/exam-schedules" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Lịch thi
           </li>
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Phân công coi thi" nzIcon="form">
+
+      <!-- ADMIN + DEPARTMENT: Quản lý học phần -->
+      <li *ngIf="isAdmin() || isDepartment()" nz-submenu nzOpen nzTitle="Quản lý học phần" nzIcon="book">
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/assign">Phân công</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/lecturers">Cán bộ coi thi</a>
+          <!-- ALL (ADMIN + DEPARTMENT): View courses -->
+          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/courses" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Danh sách học phần
           </li>
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Đối soát" nzIcon="bar-chart">
+
+      <!-- ADMIN + DEPARTMENT: Phân công coi thi -->
+      <li *ngIf="isAdmin() || isDepartment()" nz-submenu nzOpen nzTitle="Phân công coi thi" nzIcon="form">
+        <ul>
+          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/lecturers" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Danh sách cán bộ
+          </li>
+          <!-- ALL (ADMIN + DEPARTMENT): Assign lecturers -->
+          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/exam-assignment" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Phân công
+          </li>
+        </ul>
+      </li>
+
+      <!-- ADMIN + DEPARTMENT: Quản lý khoa -->
+      <li *ngIf="isAdmin() || isDepartment()" nz-submenu nzOpen nzTitle="Quản lý khoa" nzIcon="apartment">
+        <ul>
+          <!-- ADMIN + DEPARTMENT: View departments -->
+          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/department-management" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Danh sách khoa
+          </li>
+        </ul>
+      </li>
+
+      <!-- ACCOUNTING ONLY: Đối soát -->
+      <li *ngIf="isAccounting()" nz-submenu nzOpen nzTitle="Đối soát" nzIcon="bar-chart">
         <ul>
           <li nz-menu-item nzMatchRouter>
             <a routerLink="/payment">Tính tiền</a>
@@ -35,12 +114,10 @@
           </li>
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Quản lý người dùng" nzIcon="user">
+
+      <!-- ADMIN ONLY: Quản lý người dùng -->
+      <li *ngIf="isAdmin()" nz-submenu nzOpen nzTitle="Quản lý người dùng" nzIcon="user">
         <ul>
-          <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/user-management/add"
-            routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            Thêm người dùng mới
-          </li>
           <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/user-management"
             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             Danh sách người dùng
@@ -50,63 +127,14 @@
           </li>
         </ul>
       </li>
-      <li nz-menu-item nzMatchRouter>
+
+      <!-- ADMIN ONLY: Thiết lập -->
+      <li *ngIf="isAdmin()" nz-menu-item nzMatchRouter>
         <a routerLink="/settings">Thiết lập</a>
       </li>
     </ul>
   </nz-sider>
   <nz-layout>
-    <header class="hau-header">
-      <div class="hau-header-left">
-        <img
-          src="data:image/png;base64,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"
-          alt="Logo" class="hau-logo" />
-        <div class="hau-title">
-          <div class="hau-name">ĐẠI HỌC KIẾN TRÚC HÀ NỘI</div>
-          <div class="hau-slogan">HANOI ARCHITECTURAL UNIVERSITY</div>
-        </div>
-      </div>
-      <div class="hau-header-right">
-        <nav class="hau-nav">
-          <a routerLink="/" routerLinkActive="active">Trang chủ</a>
-          <span>|</span>
-          <a href="#">Lịch tuần</a>
-          <span>|</span>
-          <a href="#">E-mail</a>
-          <span>|</span>
-          <a href="#">Liên hệ</a>
-          <span>|</span>
-          <a href="#">Sơ đồ trang</a>
-          <span>|</span>
-          <a routerLink="/user-management" routerLinkActive="active">Danh sách người dùng</a>
-        </nav>
-        <div class="hau-search">
-          <input type="text" placeholder="Tìm kiếm" />
-          <button class="hau-search-btn">&#128269;</button>
-        </div>
-        <div class="hau-account" *ngIf="currentUser; else loginBlock">
-          <ul class="account-menu">
-            <li class="account-name" (click)="showDropdown = !showDropdown">
-              {{ currentUser.username }}
-              <span style="font-size: 10px; margin-left: 4px;">▼</span>
-              <ul class="account-dropdown" *ngIf="showDropdown">
-                <li class="account-role">Vai trò: {{ currentUser.role || 'ADMIN' }}</li>
-                <li class="divider"></li>
-                <li class="account-logout" (click)="logout()">Đăng xuất</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <ng-template #loginBlock>
-          <div class="hau-account">
-            <span>Tài khoản</span>
-            <div class="hau-account-dropdown">
-              <a routerLink="/login">Đăng nhập</a>
-            </div>
-          </div>
-        </ng-template>
-      </div>
-    </header>
     <nz-content>
       <div class="inner-content">
         <router-outlet></router-outlet>

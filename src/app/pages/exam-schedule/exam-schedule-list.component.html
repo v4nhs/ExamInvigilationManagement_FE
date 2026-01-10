@@ -1,0 +1,70 @@
+<div class="schedule-list-container">
+  <div class="page-header">
+    <h2>Lịch thi</h2>
+    <div class="header-actions">
+      <button class="add-btn" (click)="openAddForm()">+ Thêm lịch thi</button>
+      <button class="import-btn" (click)="fileInput.click()">⬆ Import từ file</button>
+      <input type="file" #fileInput hidden accept=".xlsx,.xls" (change)="onFileSelected($event)" />
+    </div>
+  </div>
+
+  <table *ngIf="schedules.length > 0; else emptyBlock">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Mã HP</th>
+        <th>Tên HP</th>
+        <th>Thứ</th>
+        <th>Ngày thi</th>
+        <th>Giờ thi</th>
+        <th>Hình thức thi</th>
+        <th>Số cán bộ coi thi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let schedule of schedules; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ schedule.courseCode }}</td>
+        <td><span class="course-name">{{ schedule.courseName }}</span></td>
+        <td>{{ schedule.examDay }}</td>
+        <td>{{ schedule.examDate }}</td>
+        <td>{{ schedule.examTime }}</td>
+        <td><span class="exam-type">{{ schedule.examType }}</span></td>
+        <td class="text-center">{{ schedule.invigilatorCount || '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #emptyBlock>
+    <div class="empty">Không có lịch thi nào.</div>
+  </ng-template>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <!-- Import Dialog -->
+  <div *ngIf="showImportDialog" class="import-dialog-overlay">
+    <div class="import-dialog">
+      <div class="dialog-header">
+        <h3>Nhập lịch thi từ file</h3>
+      </div>
+      <div class="dialog-body">
+        <div class="file-info">
+          <p><strong>File:</strong> {{ importFile?.name }}</p>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="cancel-btn" (click)="closeImportDialog()" [disabled]="importing">Hủy</button>
+        <button class="confirm-btn" (click)="confirmImport()" [disabled]="importing">
+          {{ importing ? 'Đang import...' : 'Import' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Form thêm lịch thi -->
+<app-exam-schedule-form
+  *ngIf="showAddForm"
+  (close)="closeAddForm()"
+  (saved)="onScheduleSaved()"
+></app-exam-schedule-form>

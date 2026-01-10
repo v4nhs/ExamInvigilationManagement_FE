@@ -1,0 +1,132 @@
+<div class="assignment-container">
+  <div class="form-wrapper" *ngIf="error; else mainContent">
+    <div class="error-box">
+      <h2>Lỗi</h2>
+      <p>{{ error }}</p>
+      <button class="back-btn" (click)="cancel()">Quay lại</button>
+    </div>
+  </div>
+
+  <ng-template #mainContent>
+    <div class="form-wrapper" *ngIf="schedule && !loading; else loadingBlock">
+    <h2>Phân công coi thi</h2>
+
+    <div class="schedule-info">
+      <div class="info-item">
+        <strong>Học phần:</strong>
+        <span>{{ schedule.courseName }} ({{ schedule.courseCode }})</span>
+      </div>
+      <div class="info-item">
+        <strong>Ngày thi:</strong>
+        <span>{{ schedule.examDate }} - {{ schedule.examTime }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Địa điểm:</strong>
+        <span>{{ schedule.room }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Loại thi:</strong>
+        <span>{{ schedule.examType }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Số sinh viên:</strong>
+        <span>{{ schedule.studentCount }}</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="assign()">
+      <div class="form-section">
+        <h3>Thông tin phân công</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="room">Phòng thi <span class="required">*</span></label>
+            <input
+              type="text"
+              id="room"
+              [(ngModel)]="room"
+              name="room"
+              placeholder="Ví dụ: A101, B203"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="studentCount">Số sinh viên <span class="required">*</span></label>
+            <input
+              type="number"
+              id="studentCount"
+              [(ngModel)]="studentCount"
+              name="studentCount"
+              min="1"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Chọn giảng viên coi thi</h3>
+        <div class="lecturer-list">
+          <div *ngIf="availableLecturers.length === 0 && allLecturers.length > 0">
+            <div *ngFor="let lecturer of allLecturers" class="lecturer-item" [class.disabled]="isAlreadyAssigned(lecturer.id)">
+              <input
+                type="checkbox"
+                [id]="'lecturer-' + lecturer.id"
+                [checked]="isSelected(lecturer.id)"
+                [disabled]="isAlreadyAssigned(lecturer.id)"
+                (change)="toggleLecturer(lecturer.id)"
+              />
+              <label [for]="'lecturer-' + lecturer.id">
+                <div class="lecturer-info">
+                  <div class="lecturer-name">{{ lecturer.fullName }}<span *ngIf="isAlreadyAssigned(lecturer.id)" class="already-assigned"> (Đã phân công)</span></div>
+                  <div class="lecturer-details">
+                    {{ lecturer.email }} {{ lecturer.academicTitle ? '| ' + lecturer.academicTitle : '' }}
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div *ngIf="availableLecturers.length > 0">
+            <div *ngFor="let lecturer of availableLecturers" class="lecturer-item" [class.disabled]="isAlreadyAssigned(lecturer.id)">
+              <input
+                type="checkbox"
+                [id]="'lecturer-' + lecturer.id"
+                [checked]="isSelected(lecturer.id)"
+                [disabled]="isAlreadyAssigned(lecturer.id)"
+                (change)="toggleLecturer(lecturer.id)"
+              />
+              <label [for]="'lecturer-' + lecturer.id">
+                <div class="lecturer-info">
+                  <div class="lecturer-name">{{ lecturer.fullName }}<span *ngIf="isAlreadyAssigned(lecturer.id)" class="already-assigned"> (Đã phân công)</span></div>
+                  <div class="lecturer-details">
+                    {{ lecturer.email }} {{ lecturer.academicTitle ? '| ' + lecturer.academicTitle : '' }}
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div *ngIf="availableLecturers.length === 0 && allLecturers.length === 0" class="no-lecturers">
+            <p>Không có giảng viên nào để chọn</p>
+          </div>
+        </div>
+        <p class="selected-count" *ngIf="selectedLecturers.length > 0">
+          Đã chọn {{ selectedLecturers.length }} giảng viên
+        </p>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">Hủy</button>
+        <button type="submit" class="submit-btn" [disabled]="assigning">
+          {{ assigning ? 'Đang phân công...' : 'Phân công' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <ng-template #loadingBlock>
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+  </ng-template>
+  </ng-template>
+</div>

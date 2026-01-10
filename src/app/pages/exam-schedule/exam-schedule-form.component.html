@@ -1,0 +1,138 @@
+<div class="modal-overlay" (click)="closeDialog()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thêm Lịch Thi</h2>
+      <button class="close-btn" (click)="closeDialog()">×</button>
+    </div>
+
+    <div class="modal-body" *ngIf="!loading; else loadingBlock">
+      <form (ngSubmit)="submit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="course">Khóa học <span class="required">*</span></label>
+            <select
+              id="course"
+              [(ngModel)]="form.courseId"
+              name="courseId"
+              required
+              class="form-control"
+            >
+              <option [value]="null" disabled>Chọn khóa học</option>
+              <option *ngFor="let course of courses" [value]="course.id">
+                {{ course.code }} - {{ course.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="examType">Hình thức thi <span class="required">*</span></label>
+            <select
+              id="examType"
+              [(ngModel)]="form.examType"
+              name="examType"
+              class="form-control"
+            >
+              <option value="WRITTEN">Thi viết</option>
+              <option value="OTHER">Hình thức khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="examDate">Ngày thi <span class="required">*</span></label>
+            <input
+              type="date"
+              id="examDate"
+              [(ngModel)]="form.examDate"
+              (change)="onDateChange()"
+              name="examDate"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="examDay">Thứ</label>
+            <input
+              type="text"
+              id="examDay"
+              [value]="form.examDay"
+              disabled
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="examTime">Giờ thi <span class="required">*</span></label>
+            <input
+              type="time"
+              id="examTime"
+              [(ngModel)]="form.examTime"
+              (change)="onTimeChange()"
+              name="examTime"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="endTime">Giờ kết thúc <span class="required">*</span></label>
+            <input
+              type="time"
+              id="endTime"
+              [(ngModel)]="form.endTime"
+              name="endTime"
+              required
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="room">Phòng thi <span class="required">*</span></label>
+            <input
+              type="text"
+              id="room"
+              [(ngModel)]="form.room"
+              name="room"
+              placeholder="Ví dụ: A101, B203"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="invigilatorCount">Số cán bộ coi thi <span class="required">*</span></label>
+            <input
+              type="number"
+              id="invigilatorCount"
+              [(ngModel)]="form.invigilatorCount"
+              name="invigilatorCount"
+              min="1"
+              required
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeDialog()">Hủy</button>
+          <button type="submit" class="submit-btn" [disabled]="submitting">
+            {{ submitting ? 'Đang lưu...' : 'Thêm lịch thi' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <ng-template #loadingBlock>
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

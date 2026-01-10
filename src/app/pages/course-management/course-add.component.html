@@ -1,0 +1,91 @@
+<div class="modal-overlay" (click)="$event.target === $event.currentTarget && closeDialog()">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h2>{{ editCourseId ? 'Chỉnh sửa học phần' : 'Thêm học phần mới' }}</h2>
+      <button type="button" class="close-btn" (click)="closeDialog()">
+        <i class="icon-close">×</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form *ngIf="!loading" (ngSubmit)="save()">
+        <div class="form-group">
+          <label for="name">Tên học phần <span class="required">*</span></label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="course.name"
+            name="name"
+            placeholder="Nhập tên học phần"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="code">Mã học phần <span class="required">*</span></label>
+          <input
+            type="text"
+            id="code"
+            [(ngModel)]="course.code"
+            name="code"
+            placeholder="Ví dụ: CS101"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="credits">Số tín chỉ <span class="required">*</span></label>
+            <input
+              type="number"
+              id="credits"
+              [(ngModel)]="course.credits"
+              name="credits"
+              min="1"
+              max="10"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="department">Khoa <span class="required">*</span></label>
+            <select
+              id="department"
+              [(ngModel)]="course.departmentId"
+              name="departmentId"
+              required
+            >
+              <option value="0" disabled>-- Chọn khoa --</option>
+              <option *ngFor="let dept of departments" [value]="dept.id">
+                {{ dept.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Mô tả</label>
+          <textarea
+            id="description"
+            [(ngModel)]="course.description"
+            name="description"
+            placeholder="Nhập mô tả (tùy chọn)"
+            rows="4"
+          ></textarea>
+        </div>
+      </form>
+
+      <div *ngIf="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="cancel-btn" (click)="closeDialog()">Hủy</button>
+      <button type="submit" class="submit-btn" (click)="save()" [disabled]="loading">
+        {{ loading ? 'Đang lưu...' : editCourseId ? 'Cập nhật' : 'Tạo mới' }}
+      </button>
+    </div>
+  </div>
+</div>

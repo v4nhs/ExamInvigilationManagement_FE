@@ -113,6 +113,7 @@ export class AuthService {
 
     const token = localStorage.getItem('token');
     if (!token) {
+      console.warn('⚠️ Không tìm thấy token');
       this.currentUserSubject.next(null);
       return;
     }
@@ -125,17 +126,34 @@ export class AuthService {
       }).join(''));
 
       const decoded = JSON.parse(jsonPayload);
+      console.log('🔐 Token decoded:', decoded);
+
+      // Handle role - could be in different formats
+      let role = decoded.roles || decoded.role || 'USER';
+      
+      // If role is an array, get first one
+      if (Array.isArray(role)) {
+        role = role[0];
+      }
+      
+      // Ensure role starts with ROLE_ prefix
+      if (role && !role.startsWith('ROLE_')) {
+        role = 'ROLE_' + role.toUpperCase();
+      } else if (role) {
+        role = role.toUpperCase();
+      }
 
       const user: User = {
         id: decoded.id || decoded.sub,
         username: decoded.username || decoded.sub,
         email: decoded.email,
-        role: decoded.roles || decoded.role || 'USER'
+        role: role
       };
 
+      console.log('✅ User from token:', user);
       this.currentUserSubject.next(user);
     } catch (error) {
-      console.error('Lỗi giải mã token:', error);
+      console.error('❌ Lỗi giải mã token:', error);
       this.currentUserSubject.next(null);
     }
   }
