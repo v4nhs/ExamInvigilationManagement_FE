@@ -9,7 +9,9 @@ import vi from '@angular/common/locales/vi';
 import { FormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from './interceptors/auth.interceptor';
+
+// Đảm bảo đường dẫn này đúng với nơi bạn lưu file interceptor
+import { authInterceptor } from './interceptors/auth.interceptor'; 
 
 registerLocaleData(vi);
 
@@ -20,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideNzI18n(vi_VN),
     importProvidersFrom(FormsModule),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    // Đăng ký interceptor tại đây
+    provideHttpClient(withInterceptors([authInterceptor])), 
   ]
 };

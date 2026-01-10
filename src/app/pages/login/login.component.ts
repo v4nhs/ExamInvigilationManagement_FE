@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'; // ✅ 1. Thêm 'inject'
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   ReactiveFormsModule, 
@@ -26,7 +26,6 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-
 export class LoginComponent {
   private fb = inject(NonNullableFormBuilder);
   private authService = inject(AuthService);
@@ -45,20 +44,39 @@ export class LoginComponent {
     if (this.validateForm.valid) {
       this.isLoading = true;
       this.errorMessage = null;
+
       this.authService.login({
         username: this.validateForm.value.username!,
         password: this.validateForm.value.password!
       }).subscribe({
-        next: (res) => {
+        next: (res: any) => { // Dùng any để linh hoạt lấy token
           this.isLoading = false;
-          if (res.authenticated) {
-            this.router.navigate(['/home']);
+          
+          // 1. KIỂM TRA VÀ LƯU TOKEN
+          // Tuỳ vào backend trả về: res.token hoặc res.result.token
+          const token = res.token || res.result?.token; 
+
+          if (token) {
+            // Lưu token TRƯỚC khi chuyển trang
+            localStorage.setItem('token', token);
+            
+            // Lưu thông tin user nếu có
+            const user = res.user || res.result?.user;
+            if (user) {
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+
+            // 2. CHUYỂN TRANG
+            // Chuyển về user-management hoặc home
+            this.router.navigate(['/user-management']); 
           } else {
-            this.errorMessage = 'Đăng nhập thất bại!';
+             // Trường hợp API trả về success nhưng không có token
+             this.errorMessage = 'Lỗi: Không nhận được Token xác thực!';
           }
         },
         error: (err) => {
           this.isLoading = false;
+          console.error(err);
           this.errorMessage = err?.error?.message || 'Sai tài khoản hoặc mật khẩu!';
         }
       });
@@ -72,4 +90,3 @@ export class LoginComponent {
     }
   }
 }
-

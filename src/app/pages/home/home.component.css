@@ -179,6 +179,7 @@ body, html {
   display: flex;
   gap: 20px;
   padding: 20px 30px;
+  margin-left: 0 !important;
 }
 .left-panel, .center-panel, .right-panel {
   background: #fff;

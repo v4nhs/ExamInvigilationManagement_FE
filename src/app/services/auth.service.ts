@@ -1,40 +1,98 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
-import { AuthRequest, AuthResponse, User } from '../models/auth.models';
+import { Observable, BehaviorSubject, tap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthRequest, User } from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  // Đảm bảo đúng URL Backend
   private apiUrl = 'http://localhost:8080/api/auth';
-  private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromToken());
+
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    this.loadUserFromToken();
+  constructor(private http: HttpClient, private router: Router) {
+    if (this.isBrowser()) {
+      this.loadUserFromToken();
+    }
   }
 
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && !!window.localStorage;
   }
 
-  login(request: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, request)
+  // --- 1. ĐĂNG NHẬP ---
+  login(request: AuthRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/authenticate`, request)
       .pipe(
         tap(response => {
-          if (response && response.token && this.isBrowser()) {
-            localStorage.setItem('token', response.token);
-            this.loadUserFromToken();
+          console.log("🔥 Phản hồi từ Server:", response); // Log để kiểm tra
+
+          if (this.isBrowser()) {
+            // Backend trả về phẳng: { token: '...', refreshToken: null, ... }
+            // Nên ta lấy trực tiếp response, hoặc response.result nếu có bọc
+            const data = response.result || response;
+            
+            // Lấy token (chấp nhận accessToken hoặc token)
+            const accessToken = data.token || data.accessToken;
+            const refreshToken = data.refreshToken;
+
+            if (accessToken) {
+              console.log("✅ Đã tìm thấy Access Token, đang lưu...");
+              // Gọi hàm lưu, bất kể refreshToken có null hay không
+              this.saveTokens(accessToken, refreshToken);
+            } else {
+              console.error("❌ Server không trả về Token nào cả!");
+            }
           }
         })
       );
   }
-
-  logout(): void {
+  saveTokens(accessToken: string, refreshToken: string | null) {
     if (!this.isBrowser()) return;
-    localStorage.removeItem('token');
+
+    // 1. Lưu Access Token (Bắt buộc)
+    localStorage.setItem('token', accessToken);
+    console.log("💾 Đã lưu Access Token vào LocalStorage");
+
+    // 2. Lưu Refresh Token (Nếu có)
+    if (refreshToken && refreshToken !== 'null') {
+      localStorage.setItem('refreshToken', refreshToken);
+      console.log("💾 Đã lưu Refresh Token");
+    } else {
+      console.warn("⚠️ Cảnh báo: Server trả về refreshToken là NULL. Tính năng tự gia hạn token sẽ không hoạt động.");
+    }
+    
+    // Cập nhật thông tin user lên Header
+    this.loadUserFromToken();
+  }
+
+  // --- 2. ĐĂNG XUẤT ---
+  logout(): void {
+    if (this.isBrowser()) {
+      localStorage.clear();
+    }
     this.currentUserSubject.next(null);
+    this.router.navigate(['/login']);
+  }
+
+  // --- 3. REFRESH TOKEN ---
+  refreshToken() {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+    return this.http.post<any>(`${this.apiUrl}/refresh`, {
+      refreshToken: refreshToken
+    });
+  }
+  // --- 4. CÁC HÀM HỖ TRỢ (Gồm hàm isAuthenticated bị thiếu) ---
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 
   getToken(): string | null {
@@ -42,33 +100,43 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getToken();
-  }
-
-  private loadUserFromToken(): void {
-    const user = this.getUserFromToken();
-    this.currentUserSubject.next(user);
-  }
-
-  private getUserFromToken(): User | null {
+  getRefreshToken(): string | null {
     if (!this.isBrowser()) return null;
+    return localStorage.getItem('refreshToken');
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+  private loadUserFromToken(): void {
+    if (!this.isBrowser()) return;
+
     const token = localStorage.getItem('token');
     if (!token) {
-      return null;
+      this.currentUserSubject.next(null);
+      return;
     }
+
     try {
-      // Decode JWT token (basic implementation)
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      return {
-        id: decoded.sub || decoded.id,
-        username: decoded.username,
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      const decoded = JSON.parse(jsonPayload);
+
+      const user: User = {
+        id: decoded.id || decoded.sub,
+        username: decoded.username || decoded.sub,
         email: decoded.email,
-        role: decoded.role
+        role: decoded.roles || decoded.role || 'USER'
       };
+
+      this.currentUserSubject.next(user);
     } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
+      console.error('Lỗi giải mã token:', error);
+      this.currentUserSubject.next(null);
     }
   }
 }
