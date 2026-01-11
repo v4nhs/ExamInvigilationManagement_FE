@@ -1,60 +1,88 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from '../../services/user.service';
+import { UserService, User, Page } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { UserAddComponent } from './user-add.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, UserAddComponent],
+  imports: [CommonModule, RouterModule, UserAddComponent, FormsModule],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
 export class UserListComponent implements OnInit {
   users: User[] = [];
+  filteredUsers: User[] = [];
   loading = false;
   deleting: string | null = null;
   showAddForm = false;
   editingUserId: number | null = null;
+  searchQuery: string = '';
+
+  // Pagination properties
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalElements: number = 0;
+  totalPages: number = 0;
+  usePagination: boolean = true;
+  sortBy: string = 'id';
+  sortDirection: string = 'ASC';
+  Math = Math;
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
 
   constructor(
     private userService: UserService,
     private router: Router,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
-    this.userService.users$.subscribe(data => {
-      this.users = data;
-    });
-    this.loadUsers();
+    this.loadUsersPaginated();
+  }
+
+  loadUsersPaginated() {
+    this.loading = true;
+    if (this.searchQuery.trim()) {
+      this.userService.searchUsers(this.searchQuery, this.currentPage, this.pageSize).subscribe({
+        next: (page: Page<User>) => this.handlePageResponse(page),
+        error: (err) => this.handleError(err)
+      });
+    } else {
+      this.userService.getUsersPaginated(this.currentPage, this.pageSize, this.sortBy, this.sortDirection).subscribe({
+        next: (page: Page<User>) => this.handlePageResponse(page),
+        error: (err) => this.handleError(err)
+      });
+    }
+  }
+
+  handlePageResponse(page: Page<User>) {
+    this.users = page.content || [];
+    this.filteredUsers = this.users;
+    this.totalElements = page.totalElements;
+    this.totalPages = page.totalPages;
+    this.loading = false;
+  }
+
+  handleError(err: any) {
+    this.loading = false;
+    if (err.status === 401 || err.message === 'No refresh token available') {
+      localStorage.clear();
+      this.router.navigate(['/login']);
+      return;
+    }
+    console.error('Lỗi tải danh sách:', err);
   }
 
   loadUsers() {
-    this.loading = true;
-    this.userService.getUsers().subscribe({
-      next: (data) => {
-        if (Array.isArray(data)) this.users = data;
-        else if (data && Array.isArray((data as any).result)) this.users = (data as any).result;
-        else this.users = [];
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        if (err.status === 401 || err.message === 'No refresh token available') {
-          localStorage.clear();
-          this.router.navigate(['/login']);
-          return;
-        }
-        console.error('Lỗi tải danh sách:', err);
-      }
-    });
+    this.currentPage = 0;
+    this.loadUsersPaginated();
   }
 
-  openAddForm() {
-    this.editingUserId = null;
+  openAddForm(id?: string | number) {
+    this.editingUserId = id ? Number(id) : null;
     this.showAddForm = true;
   }
 
@@ -66,8 +94,42 @@ export class UserListComponent implements OnInit {
   onUserSaved() {
     this.closeAddForm();
     this.loadUsers();
-  }  editUser(user: User) {
-    this.router.navigate(['/user-management', user.id, 'edit']);
+  }
+
+  onSearchChange() {
+    this.currentPage = 0;
+    this.loadUsersPaginated();
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.currentPage = 0;
+    this.loadUsersPaginated();
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadUsersPaginated();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadUsersPaginated();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.loadUsersPaginated();
+    }
+  }
+
+  editUser(user: User) {
+    this.openAddForm(user.id);
   }
 
   deleteUser(user: User) {
@@ -77,8 +139,8 @@ export class UserListComponent implements OnInit {
     this.deleting = user.id;
     this.userService.deleteUser(user.id).subscribe({
       next: () => {
-        this.users = this.users.filter(u => u.id !== user.id);
         this.deleting = null;
+        this.loadUsersPaginated();
       },
       error: (err) => {
         alert('Xóa người dùng thất bại!');
@@ -86,5 +148,26 @@ export class UserListComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let startPage = Math.max(0, this.currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisible);
+    
+    if (endPage - startPage < maxVisible) {
+      startPage = Math.max(0, endPage - maxVisible);
+    }
+    
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 0;
+    this.loadUsersPaginated();
   }
 }

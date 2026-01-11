@@ -4,6 +4,16 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Course, CourseRequest, CourseResponse } from '../models/course.models';
 
+export interface Page<T> {
+  content: T[];
+  pageable: any;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CourseService {
   private apiUrl = 'http://localhost:8080/api/courses';
@@ -57,6 +67,20 @@ export class CourseService {
     formData.append('file', file);
     return this.http.post(`${this.apiUrl}/import`, formData).pipe(
       tap(() => this.getAll().subscribe())
+    );
+  }
+
+  getCoursesPaginated(page: number = 0, size: number = 10, sortBy: string = 'id', direction: string = 'ASC'): Observable<Page<Course>> {
+    const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${direction}`;
+    return this.http.get<any>(`${this.apiUrl}/paginated${params}`).pipe(
+      map((res: any) => res.result || res.data || res)
+    );
+  }
+
+  searchCourses(keyword: string, page: number = 0, size: number = 10): Observable<Page<Course>> {
+    const params = `?keyword=${keyword}&page=${page}&size=${size}`;
+    return this.http.get<any>(`${this.apiUrl}/search${params}`).pipe(
+      map((res: any) => res.result || res.data || res)
     );
   }
 }

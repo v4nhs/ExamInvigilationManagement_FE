@@ -9,8 +9,6 @@ import vi from '@angular/common/locales/vi';
 import { FormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-
-// Đảm bảo đường dẫn này đúng với nơi bạn lưu file interceptor
 import { authInterceptor } from './interceptors/auth.interceptor'; 
 
 registerLocaleData(vi);

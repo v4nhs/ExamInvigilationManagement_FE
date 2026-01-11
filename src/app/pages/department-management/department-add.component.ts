@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { DepartmentService } from '../../services/department.service';
 import { DepartmentRequest } from '../../models/department.models';
 
@@ -24,7 +24,7 @@ export class DepartmentAddComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private departmentService: DepartmentService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {
     this.departmentForm = this.fb.group({
       name: ['', Validators.required],
@@ -52,7 +52,7 @@ export class DepartmentAddComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading department:', err);
-        this.message.error('Không thể tải dữ liệu phòng ban!');
+        this.notificationService.error('Không thể tải dữ liệu phòng ban!');
         this.loading = false;
       }
     });
@@ -70,7 +70,7 @@ export class DepartmentAddComponent implements OnInit {
 
     submitRequest.subscribe({
       next: () => {
-        this.message.success(this.editDepartmentId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
+        this.notificationService.success(this.editDepartmentId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
         this.loading = false;
         this.saved.emit();
         this.closeDialog();
@@ -78,7 +78,7 @@ export class DepartmentAddComponent implements OnInit {
       error: (err) => {
         console.error('Error saving department:', err);
         const errorMsg = err.error?.message || 'Lỗi khi lưu dữ liệu!';
-        this.message.error(errorMsg);
+        this.notificationService.error(errorMsg);
         this.loading = false;
       }
     });

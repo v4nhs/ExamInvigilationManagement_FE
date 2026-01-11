@@ -79,7 +79,7 @@
                 <div class="lecturer-info">
                   <div class="lecturer-name">{{ lecturer.fullName }}<span *ngIf="isAlreadyAssigned(lecturer.id)" class="already-assigned"> (Đã phân công)</span></div>
                   <div class="lecturer-details">
-                    {{ lecturer.email }} {{ lecturer.academicTitle ? '| ' + lecturer.academicTitle : '' }}
+                    {{ lecturer.academicTitle ? lecturer.academicTitle : 'N/A' }}
                   </div>
                 </div>
               </label>
@@ -98,7 +98,7 @@
                 <div class="lecturer-info">
                   <div class="lecturer-name">{{ lecturer.fullName }}<span *ngIf="isAlreadyAssigned(lecturer.id)" class="already-assigned"> (Đã phân công)</span></div>
                   <div class="lecturer-details">
-                    {{ lecturer.email }} {{ lecturer.academicTitle ? '| ' + lecturer.academicTitle : '' }}
+                    {{ lecturer.academicTitle ? lecturer.academicTitle : 'N/A' }}
                   </div>
                 </div>
               </label>

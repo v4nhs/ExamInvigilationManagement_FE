@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { CourseService } from '../../services/course.service';
 import { DepartmentService } from '../../services/department.service';
+import { NotificationService } from '../../services/notification.service';
 import { CourseRequest } from '../../models/course.models';
 import { Department } from '../../models/department.models';
 
@@ -33,7 +33,7 @@ export class CourseAddComponent implements OnInit {
   constructor(
     private courseService: CourseService,
     private departmentService: DepartmentService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -70,7 +70,7 @@ export class CourseAddComponent implements OnInit {
       error: (err) => {
         console.error('Error loading course:', err);
         this.loading = false;
-        this.message.error('Không thể tải dữ liệu học phần!');
+        this.notificationService.error('Không thể tải dữ liệu học phần!');
       }
     });
   }
@@ -85,14 +85,14 @@ export class CourseAddComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.message.success(this.editCourseId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
+        this.notificationService.success(this.editCourseId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
         this.loading = false;
         this.saved.emit();
         this.closeDialog();
       },
       error: (err) => {
         console.error('Error saving course:', err);
-        this.message.error('Lỗi khi lưu dữ liệu!');
+        this.notificationService.error('Lỗi khi lưu dữ liệu!');
         this.loading = false;
       }
     });
@@ -100,19 +100,19 @@ export class CourseAddComponent implements OnInit {
 
   validateForm(): boolean {
     if (!this.course.name.trim()) {
-      this.message.warning('Vui lòng nhập tên học phần');
+      this.notificationService.warning('Vui lòng nhập tên học phần');
       return false;
     }
     if (!this.course.code.trim()) {
-      this.message.warning('Vui lòng nhập mã học phần');
+      this.notificationService.warning('Vui lòng nhập mã học phần');
       return false;
     }
     if (this.course.credits <= 0) {
-      this.message.warning('Số tín chỉ phải lớn hơn 0');
+      this.notificationService.warning('Số tín chỉ phải lớn hơn 0');
       return false;
     }
     if (this.course.departmentId === 0) {
-      this.message.warning('Vui lòng chọn khoa');
+      this.notificationService.warning('Vui lòng chọn khoa');
       return false;
     }
     return true;

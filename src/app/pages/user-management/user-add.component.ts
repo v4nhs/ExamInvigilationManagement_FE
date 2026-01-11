@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UserService, UserCreationRequest } from '../../services/user.service'; 
 import { RoleService, Role } from '../../services/role.service';
 import { FormsModule } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -34,7 +34,7 @@ export class UserAddComponent implements OnInit {
   constructor(
     private userService: UserService, 
     private roleService: RoleService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -52,7 +52,7 @@ export class UserAddComponent implements OnInit {
       },
       error: (err) => {
         console.error('Không thể tải danh sách vai trò:', err);
-        this.message.error('Không thể tải danh sách vai trò!');
+        this.notificationService.error('Không thể tải danh sách vai trò!');
       }
     });
   }
@@ -72,14 +72,14 @@ export class UserAddComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.message.success(this.editUserId ? 'Cập nhật thành công!' : 'Thêm người dùng thành công!');
+        this.notificationService.success(this.editUserId ? 'Cập nhật thành công!' : 'Thêm người dùng thành công!');
         this.loading = false;
         this.saved.emit();
         this.closeDialog();
       },
       error: (err) => {
         const errorMsg = err.error?.message || 'Lỗi khi lưu dữ liệu!';
-        this.message.error(errorMsg);
+        this.notificationService.error(errorMsg);
         this.loading = false;
       }
     });

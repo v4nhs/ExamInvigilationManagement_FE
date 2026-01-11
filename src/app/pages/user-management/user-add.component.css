@@ -91,7 +91,7 @@
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .form-item input {
@@ -99,7 +99,7 @@
   padding: 10px 12px;
   border: 2px solid #e8e8e8;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: inherit;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -116,7 +116,7 @@ nz-select {
 }
 
 .loading-text {
-  font-size: 12px;
+  font-size: 16px;
   color: #faad14;
   margin-top: 4px;
 }
@@ -140,7 +140,7 @@ nz-select {
   padding: 10px 20px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -199,7 +199,7 @@ nz-select {
 .loading-spinner p {
   margin-top: 16px;
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .role-checkboxes {
@@ -253,7 +253,7 @@ nz-select {
 .warning-text {
   margin-top: 8px;
   color: #d32f2f;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 @media (max-width: 600px) {

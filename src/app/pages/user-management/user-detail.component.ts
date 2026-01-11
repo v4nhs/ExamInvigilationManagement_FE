@@ -45,7 +45,7 @@ export class UserDetailComponent implements OnInit {
 
   goEdit() {
     if (this.user) {
-      this.router.navigate([`/user-management/${this.user.id}/edit`]); // Đảm bảo đường dẫn đúng với router config
+      this.router.navigate([`/user-management/${this.user.id}/edit`]); 
     }
   }
 

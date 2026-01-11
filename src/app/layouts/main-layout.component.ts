@@ -121,4 +121,26 @@ export class MainLayoutComponent implements OnInit {
   isStaffOrAbove(): boolean {
     return this.hasAnyRole('ROLE_ADMIN', 'ROLE_DEPARTMENT', 'ROLE_STAFF');
   }
+
+  // ===== PAYMENT MENU CLICK HANDLERS =====
+  onPaymentMenuClick(menuItem: string): void {
+    console.log(`📌 Clicked on payment menu item: ${menuItem}`);
+    
+    switch(menuItem) {
+      case 'payment':
+        this.router.navigate(['/payment']);
+        console.log('🎯 Navigating to: /payment (Danh sách thanh toán)');
+        break;
+      case 'payouts':
+        this.router.navigate(['/payouts']);
+        console.log('🎯 Navigating to: /payouts (Thống kê)');
+        break;
+      case 'reports':
+        this.router.navigate(['/reports']);
+        console.log('🎯 Navigating to: /reports (Báo cáo)');
+        break;
+      default:
+        console.warn(`⚠️ Unknown payment menu item: ${menuItem}`);
+    }
+  }
 }

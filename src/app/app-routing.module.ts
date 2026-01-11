@@ -13,8 +13,6 @@ const routes: Routes = [
         children: [
           { path: '', component: DepartmentListComponent },
           { path: 'add', component: DepartmentAddComponent },
-          // Sửa khoa sẽ làm sau, placeholder:
-          // { path: 'edit/:id', component: DepartmentEditComponent },
         ]
       },
     ]

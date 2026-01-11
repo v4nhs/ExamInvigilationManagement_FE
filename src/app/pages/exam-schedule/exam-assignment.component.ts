@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { ExamScheduleService } from '../../services/exam-schedule.service';
 import { LecturerService } from '../../services/lecturer.service';
 import { ExamSchedule, AssignLecturerRequest, AvailableLecturer } from '../../models/exam-schedule.models';
@@ -35,7 +35,7 @@ export class ExamAssignmentComponent implements OnInit {
     private lecturerService: LecturerService,
     private route: ActivatedRoute,
     private router: Router,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class ExamAssignmentComponent implements OnInit {
           };
           this.studentCount = this.schedule.studentCount || 0;
           this.loading = false;
-          this.message.info('Sử dụng dữ liệu mẫu vì backend chưa sẵn sàng');
+          this.notificationService.info('Sử dụng dữ liệu mẫu vì backend chưa sẵn sàng');
           return;
         }
         
@@ -91,7 +91,7 @@ export class ExamAssignmentComponent implements OnInit {
           errorMsg = 'Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.';
         }
         this.error = errorMsg;
-        this.message.error(errorMsg);
+        this.notificationService.error(errorMsg);
       }
     });
   }
@@ -108,8 +108,6 @@ export class ExamAssignmentComponent implements OnInit {
         this.availableLecturers = this.allLecturers.map(l => ({
           id: l.id,
           fullName: l.fullName,
-          email: l.email,
-          phone: l.phone,
           department: l.department
         }));
       }
@@ -161,7 +159,7 @@ export class ExamAssignmentComponent implements OnInit {
     if (!this.validateForm()) return;
 
     if (!this.scheduleId) {
-      this.message.error('Không tìm thấy lịch thi!');
+      this.notificationService.error('Không tìm thấy lịch thi!');
       return;
     }
 
@@ -178,12 +176,12 @@ export class ExamAssignmentComponent implements OnInit {
 
     assignCall.subscribe({
       next: () => {
-        this.message.success('Phân công giảng viên thành công!');
+        this.notificationService.success('Phân công giảng viên thành công!');
         this.router.navigate(['/exam-assignment']);
       },
       error: (err) => {
         console.error('Error assigning lecturers:', err);
-        this.message.error('Lỗi khi phân công giảng viên!');
+        this.notificationService.error('Lỗi khi phân công giảng viên!');
         this.assigning = false;
       }
     });
@@ -191,15 +189,15 @@ export class ExamAssignmentComponent implements OnInit {
 
   validateForm(): boolean {
     if (this.selectedLecturers.length === 0) {
-      this.message.warning('Vui lòng chọn ít nhất 1 giảng viên');
+      this.notificationService.warning('Vui lòng chọn ít nhất 1 giảng viên');
       return false;
     }
     if (!this.room.trim()) {
-      this.message.warning('Vui lòng nhập phòng thi');
+      this.notificationService.warning('Vui lòng nhập phòng thi');
       return false;
     }
     if (this.studentCount <= 0) {
-      this.message.warning('Số sinh viên phải lớn hơn 0');
+      this.notificationService.warning('Số sinh viên phải lớn hơn 0');
       return false;
     }
     return true;
@@ -211,6 +209,6 @@ export class ExamAssignmentComponent implements OnInit {
 
   getLecturerName(lecturerId: number): string {
     const lecturer = this.allLecturers.find(l => l.id === lecturerId);
-    return lecturer ? `${lecturer.fullName} (${lecturer.email})` : 'N/A';
+    return lecturer ? lecturer.fullName : 'N/A';
   }
 }

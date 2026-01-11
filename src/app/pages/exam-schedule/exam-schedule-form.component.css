@@ -100,7 +100,7 @@
 .form-group label {
   font-weight: 600;
   color: #333;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .required {
@@ -111,7 +111,7 @@
   padding: 12px 15px;
   border: 2px solid #e8e8e8;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: inherit;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -173,7 +173,7 @@
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -225,3 +225,4 @@
     flex-direction: column-reverse;
   }
 }
+

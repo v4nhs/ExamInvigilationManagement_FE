@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { CourseService } from '../../services/course.service';
+import { CourseService, Page } from '../../services/course.service';
 import { DepartmentService } from '../../services/department.service';
+import { NotificationService } from '../../services/notification.service';
 import { CourseAddComponent } from './course-add.component';
 import { Course } from '../../models/course.models';
 import { Department } from '../../models/department.models';
@@ -18,6 +18,7 @@ import { Department } from '../../models/department.models';
 })
 export class CourseListComponent implements OnInit {
   courses: Course[] = [];
+  filteredCourses: Course[] = [];
   departments: Department[] = [];
   loading = false;
   deleting: number | null = null;
@@ -27,15 +28,25 @@ export class CourseListComponent implements OnInit {
   importing = false;
   showAddForm = false;
   editingCourseId: number | null = null;
+  searchQuery: string = '';
+  // Pagination properties
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalElements: number = 0;
+  totalPages: number = 0;
+  sortBy: string = 'id';
+  sortDirection: string = 'ASC';
+  Math = Math;
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
 
   constructor(
     private courseService: CourseService,
     private departmentService: DepartmentService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
-    this.fetchCourses();
+    this.fetchCoursesPaginated();
     this.loadDepartments();
   }
 
@@ -50,8 +61,35 @@ export class CourseListComponent implements OnInit {
     });
   }
 
-  openAddForm() {
-    this.editingCourseId = null;
+  fetchCoursesPaginated() {
+    this.loading = true;
+    if (this.searchQuery.trim()) {
+      this.courseService.searchCourses(this.searchQuery, this.currentPage, this.pageSize).subscribe({
+        next: (page: Page<Course>) => this.handlePageResponse(page),
+        error: () => this.handleError()
+      });
+    } else {
+      this.courseService.getCoursesPaginated(this.currentPage, this.pageSize, this.sortBy, this.sortDirection).subscribe({
+        next: (page: Page<Course>) => this.handlePageResponse(page),
+        error: () => this.handleError()
+      });
+    }
+  }
+
+  handlePageResponse(page: Page<Course>) {
+    this.courses = page.content || [];
+    this.filteredCourses = this.courses;
+    this.totalElements = page.totalElements;
+    this.totalPages = page.totalPages;
+    this.loading = false;
+  }
+
+  handleError() {
+    this.loading = false;
+  }
+
+  openAddForm(id?: number) {
+    this.editingCourseId = id || null;
     this.showAddForm = true;
   }
 
@@ -65,17 +103,41 @@ export class CourseListComponent implements OnInit {
     this.fetchCourses();
   }
 
+  onSearchChange() {
+    this.currentPage = 0;
+    this.fetchCoursesPaginated();
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.currentPage = 0;
+    this.fetchCoursesPaginated();
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.fetchCoursesPaginated();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.fetchCoursesPaginated();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.fetchCoursesPaginated();
+    }
+  }
+
   fetchCourses() {
-    this.loading = true;
-    this.courseService.getAll().subscribe({
-      next: (data) => {
-        this.courses = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
+    this.currentPage = 0;
+    this.fetchCoursesPaginated();
   }
 
   deleteCourse(id: number) {
@@ -86,10 +148,10 @@ export class CourseListComponent implements OnInit {
       next: () => {
         this.courses = this.courses.filter(c => c.id !== id);
         this.deleting = null;
-        this.message.success('Xóa học phần thành công!');
+        this.notificationService.success('Xóa học phần thành công!');
       },
       error: (err) => {
-        this.message.error('Xóa học phần thất bại!');
+        this.notificationService.error('Xóa học phần thất bại!');
         this.deleting = null;
         console.error(err);
       }
@@ -109,25 +171,25 @@ export class CourseListComponent implements OnInit {
 
   confirmImport(): void {
     if (!this.importFile) {
-      this.message.warning('Vui lòng chọn file');
+      this.notificationService.warning('Vui lòng chọn file');
       return;
     }
 
     if (this.selectedDepartmentId === 0) {
-      this.message.warning('Vui lòng chọn khoa');
+      this.notificationService.warning('Vui lòng chọn khoa');
       return;
     }
 
     this.importing = true;
     this.courseService.import(this.selectedDepartmentId, this.importFile).subscribe({
       next: () => {
-        this.message.success('Import thành công!');
+        this.notificationService.success('Import thành công!');
         this.fetchCourses();
         this.closeImportDialog();
       },
       error: (err) => {
         console.error('Error importing courses:', err);
-        this.message.error('Lỗi khi import file');
+        this.notificationService.error('Lỗi khi import file');
         this.importing = false;
       }
     });
@@ -138,5 +200,26 @@ export class CourseListComponent implements OnInit {
     this.importFile = null;
     this.selectedDepartmentId = 0;
     this.importing = false;
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let startPage = Math.max(0, this.currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisible);
+    
+    if (endPage - startPage < maxVisible) {
+      startPage = Math.max(0, endPage - maxVisible);
+    }
+    
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 0;
+    this.fetchCoursesPaginated();
   }
 }

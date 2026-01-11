@@ -1,0 +1,59 @@
+<div class="salary-container">
+  <div class="header-section">
+    <button class="back-btn" (click)="goBack()">← Quay lại</button>
+    <h1>Chi tiết tiền coi thi các ca</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <div *ngIf="!loading && salary" class="salary-card">
+    <div class="salary-header">
+      <div class="lecturer-info">
+        <h2>{{ salary.lecturerName }}</h2>
+        <p class="lecturer-id">ID: {{ salary.lecturerId }}</p>
+      </div>
+      <div class="salary-total">
+        <p class="label">Tổng thu nhập</p>
+        <p class="amount">{{ (calculateTotalDetailAmount() | number: '1.0-0') }} đ</p>
+      </div>
+    </div>
+
+    <div class="details-section">
+      <h3>Chi tiết từng lịch thi</h3>
+      <table class="details-table" *ngIf="salary.details && salary.details.length > 0; else noDetails">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Mã lịch thi</th>
+            <th>Hình thức thi</th>
+            <th>Số sinh viên</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detail of salary.details; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ detail.examScheduleId }}</td>
+            <td><span class="exam-type-badge">{{ getExamTypeLabel(detail.examType) }}</span></td>
+            <td>{{ detail.studentCount }}</td>
+            <td class="currency">{{ (detail.unitPrice | number: '1.0-0') }} đ</td>
+            <td class="currency amount">{{ (detail.amount | number: '1.0-0') }} đ</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noDetails>
+        <div class="no-details">Chưa có chi tiết lương cho giảng viên này.</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !salary" class="error-container">
+    <p>Không tìm thấy thông tin lương</p>
+    <button class="back-btn" (click)="goBack()">Quay lại</button>
+  </div>
+</div>

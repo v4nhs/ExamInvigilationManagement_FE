@@ -1,26 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { ExamScheduleService } from '../../services/exam-schedule.service';
 import { ExamSchedule } from '../../models/exam-schedule.models';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-exam-assignment-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './exam-assignment-list.component.html',
   styleUrls: ['./exam-assignment-list.component.css']
 })
 export class ExamAssignmentListComponent implements OnInit {
   schedules: ExamSchedule[] = [];
+  filteredSchedules: ExamSchedule[] = [];
   loading = false;
   error: string | null = null;
+  searchQuery: string = '';
 
   constructor(
     private examScheduleService: ExamScheduleService,
     private router: Router,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -35,9 +38,10 @@ export class ExamAssignmentListComponent implements OnInit {
       next: (data) => {
         console.log('Schedules loaded:', data);
         this.schedules = Array.isArray(data) ? data : [];
+        this.filteredSchedules = this.schedules;
         this.loading = false;
         if (this.schedules.length === 0) {
-          this.message.info('Không có lịch thi nào');
+          this.notificationService.info('Không có lịch thi nào');
         }
       },
       error: (err) => {
@@ -77,14 +81,34 @@ export class ExamAssignmentListComponent implements OnInit {
               status: 'PLANNED'
             }
           ];
-          this.message.info('Sử dụng dữ liệu mẫu vì backend chưa sẵn sàng');
+          this.filteredSchedules = this.schedules;
+          this.notificationService.info('Sử dụng dữ liệu mẫu vì backend chưa sẵn sàng');
           return;
         }
         
         this.error = 'Không thể tải danh sách lịch thi';
-        this.message.error(this.error);
+        this.notificationService.error(this.error);
       }
     });
+  }
+
+  onSearchChange() {
+    if (!this.searchQuery.trim()) {
+      this.filteredSchedules = this.schedules;
+      return;
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    this.filteredSchedules = this.schedules.filter(s =>
+      (s.courseName?.toLowerCase().includes(query)) ||
+      (s.courseCode && s.courseCode.toLowerCase().includes(query)) ||
+      (s.room && s.room.toLowerCase().includes(query))
+    );
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.filteredSchedules = this.schedules;
   }
 
   goToAssignment(scheduleId: number): void {

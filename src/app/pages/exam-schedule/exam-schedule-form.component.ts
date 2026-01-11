@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { ExamScheduleService } from '../../services/exam-schedule.service';
 import { CourseService } from '../../services/course.service';
 import { CreateExamScheduleRequest } from '../../models/exam-schedule.models';
@@ -38,7 +38,7 @@ export class ExamScheduleFormComponent implements OnInit {
   constructor(
     private examScheduleService: ExamScheduleService,
     private courseService: CourseService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +54,7 @@ export class ExamScheduleFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading courses:', err);
-        this.message.error('Lỗi tải danh sách khóa học');
+        this.notificationService.error('Lỗi tải danh sách khóa học');
         this.loading = false;
       }
     });
@@ -78,27 +78,27 @@ export class ExamScheduleFormComponent implements OnInit {
 
   validateForm(): boolean {
     if (!this.form.courseId) {
-      this.message.warning('Vui lòng chọn khóa học');
+      this.notificationService.warning('Vui lòng chọn khóa học');
       return false;
     }
     if (!this.form.examDate) {
-      this.message.warning('Vui lòng chọn ngày thi');
+      this.notificationService.warning('Vui lòng chọn ngày thi');
       return false;
     }
     if (!this.form.examTime) {
-      this.message.warning('Vui lòng chọn giờ thi');
+      this.notificationService.warning('Vui lòng chọn giờ thi');
       return false;
     }
     if (!this.form.endTime) {
-      this.message.warning('Vui lòng chọn giờ kết thúc');
+      this.notificationService.warning('Vui lòng chọn giờ kết thúc');
       return false;
     }
     if (!this.form.room.trim()) {
-      this.message.warning('Vui lòng nhập phòng thi');
+      this.notificationService.warning('Vui lòng nhập phòng thi');
       return false;
     }
     if (this.form.invigilatorCount <= 0) {
-      this.message.warning('Số cán bộ coi thi phải lớn hơn 0');
+      this.notificationService.warning('Số cán bộ coi thi phải lớn hơn 0');
       return false;
     }
     return true;
@@ -121,14 +121,14 @@ export class ExamScheduleFormComponent implements OnInit {
 
     this.examScheduleService.create(request).subscribe({
       next: () => {
-        this.message.success('Thêm lịch thi thành công!');
+        this.notificationService.success('Thêm lịch thi thành công!');
         this.submitting = false;
         this.saved.emit();
         this.closeDialog();
       },
       error: (err) => {
         console.error('Error creating exam schedule:', err);
-        this.message.error('Lỗi khi thêm lịch thi');
+        this.notificationService.error('Lỗi khi thêm lịch thi');
         this.submitting = false;
       }
     });

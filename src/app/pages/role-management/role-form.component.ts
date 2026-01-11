@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NotificationService } from '../../services/notification.service';
 import { RoleService, Role } from '../../services/role.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class RoleFormComponent implements OnInit {
 
   constructor(
     private roleService: RoleService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -39,7 +39,7 @@ export class RoleFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading role:', err);
-        this.message.error('Không thể tải dữ liệu vai trò!');
+        this.notificationService.error('Không thể tải dữ liệu vai trò!');
         this.loading = false;
       }
     });
@@ -47,7 +47,7 @@ export class RoleFormComponent implements OnInit {
 
   onSubmit() {
     if (!this.role.name.trim()) {
-      this.message.warning('Vui lòng nhập tên vai trò');
+      this.notificationService.warning('Vui lòng nhập tên vai trò');
       return;
     }
 
@@ -58,7 +58,7 @@ export class RoleFormComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.message.success(this.editRoleId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
+        this.notificationService.success(this.editRoleId ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
         this.loading = false;
         this.saved.emit();
         this.closeDialog();
@@ -66,7 +66,7 @@ export class RoleFormComponent implements OnInit {
       error: (err) => {
         console.error('Error saving role:', err);
         const errorMsg = err.error?.message || 'Lỗi khi lưu dữ liệu!';
-        this.message.error(errorMsg);
+        this.notificationService.error(errorMsg);
         this.loading = false;
       }
     });

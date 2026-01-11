@@ -1,14 +1,14 @@
 export interface ExamSchedule {
   id: number;
-  course?: any;  // Course object
+  course?: any;  
   courseId?: number;
-  courseName?: string;  // from course.name
-  courseCode?: string;  // from course.code
-  examDate: string;  // LocalDate format: yyyy-MM-dd
-  examDay: string;  // Thứ 2, Thứ 3, etc.
-  examTime: string;  // LocalTime format: HH:mm:ss
-  endTime?: string;  // LocalTime format: HH:mm:ss
-  examType: string;  // WRITTEN, OTHER
+  courseName?: string;  
+  courseCode?: string;  
+  examDate: string;  
+  examDay: string; 
+  examTime: string;  
+  endTime?: string; 
+  examType: string;  
   room?: string;
   studentCount?: number;
   invigilatorCount?: number;
@@ -42,15 +42,13 @@ export interface ExamAssignment {
   lecturerEmail: string;
   room: string;
   studentCount: number;
-  assignmentType: string; // WRITTEN, OTHER
+  assignmentType: string; 
   assignedAt: string;
 }
 
 export interface AvailableLecturer {
   id: number;
   fullName: string;
-  email: string;
-  phone?: string;
   department?: string;
   academicTitle?: string;
   specialization?: string;

@@ -10,13 +10,13 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   
-  // 2. Route trang đăng nhập (Nằm ngoài Layout chính)
+  // 2. Route trang đăng nhập
   {
     path: 'login',
     component: LoginComponent
   },
 
-  // 3. Các trang nội bộ (Nằm trong Main Layout)
+  // 3. Các trang nội bộ
   {
     path: '',
     loadComponent: () => import('./layouts/main-layout.component').then((m: any) => m.MainLayoutComponent),
@@ -38,12 +38,10 @@ export const routes: Routes = [
         path: 'user-management',
         loadComponent: () => import('./pages/user-management/user-list.component').then(m => m.UserListComponent)
       },
-      // Lưu ý: Route cụ thể 'roles' phải đặt TRƯỚC route có tham số ':id'
       {
         path: 'user-management/roles',
         loadComponent: () => import('./pages/role-management/role-list.component').then(m => m.RoleListComponent)
       },
-      // Route có tham số :id (đặt sau các route cụ thể)
       {
         path: 'user-management/:id',
         loadComponent: () => import('./pages/user-management/user-detail.component').then(m => m.UserDetailComponent)
@@ -71,6 +69,22 @@ export const routes: Routes = [
       {
         path: 'exam-assignment/:id',
         loadComponent: () => import('./pages/exam-schedule/exam-assignment.component').then(m => m.ExamAssignmentComponent)
+      },
+      {
+        path: 'payment',
+        loadComponent: () => import('./pages/payment-management/payment-list.component').then(m => m.PaymentListComponent)
+      },
+      {
+        path: 'payment/:id',
+        loadComponent: () => import('./pages/payment-management/lecturer-salary.component').then(m => m.LecturerSalaryComponent)
+      },
+      {
+        path: 'payouts',
+        loadComponent: () => import('./pages/payment-management/payouts.component').then(m => m.PayoutsComponent)
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('./pages/payment-management/reports.component').then(m => m.ReportsComponent)
       },
     ]
   },

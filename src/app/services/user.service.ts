@@ -6,6 +6,15 @@ export interface Role { id: number; name: string; }
 export interface User { id: string; username: string; firstName: string; lastName: string; email: string; roles: Role[]; }
 export interface UserCreationRequest { username: string; password: string; firstName: string; lastName: string; email: string; roleIds: number[]; }
 export interface UserUpdateRequest { password?: string; firstName?: string; lastName?: string; email?: string; roleIds?: number[]; }
+export interface Page<T> {
+  content: T[];
+  pageable: any;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -27,7 +36,7 @@ export class UserService {
         if (response.content) return response.content;
         return response;
       }),
-      tap(users => this.usersSubject.next(users)) // Phát dữ liệu mới đến tất cả nơi đang lắng nghe
+      tap(users => this.usersSubject.next(users)) 
     );
   }
 
@@ -41,7 +50,7 @@ export class UserService {
   createUser(request: UserCreationRequest): Observable<User> {
     return this.http.post<any>(this.apiUrl, request).pipe(
       map(response => response.result || response),
-      tap(() => this.getUsers().subscribe()) // Gọi lại getUsers để cập nhật Subject
+      tap(() => this.getUsers().subscribe())
     );
   }
 
@@ -58,9 +67,27 @@ export class UserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => {
         const currentUsers = this.usersSubject.value.filter(u => u.id !== id);
-        this.usersSubject.next(currentUsers); // Cập nhật mảng hiện tại sau khi xóa
+        this.usersSubject.next(currentUsers); 
       })
     );
+  }
+
+  getUsersPaginated(page: number = 0, size: number = 10, sortBy: string = 'id', direction: string = 'ASC'): Observable<Page<User>> {
+    const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${direction}`;
+    return this.http.get<any>(`${this.apiUrl}/paginated${params}`).pipe(
+      map(response => response.result || response.data || response)
+    );
+  }
+
+  searchUsers(keyword: string, page: number = 0, size: number = 10): Observable<Page<User>> {
+    const params = `?keyword=${keyword}&page=${page}&size=${size}`;
+    return this.http.get<any>(`${this.apiUrl}/search${params}`).pipe(
+      map(response => response.result || response.data || response)
+    );
+  }
+
+  getAll(): Observable<User[]> {
+    return this.getUsers();
   }
 }
 

@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
-// 1. Import Module của NG-ZORRO để dùng Select nhiều
 import { NzSelectModule } from 'ng-zorro-antd/select'; 
 import { UserService, UserUpdateRequest } from '../../services/user.service';
 import { RoleService, Role } from '../../services/role.service';
@@ -11,7 +9,7 @@ import { RoleService, Role } from '../../services/role.service';
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, NzSelectModule], // 2. Thêm NzSelectModule vào đây
+  imports: [CommonModule, FormsModule, NzSelectModule], 
   template: `
     <h2>Sửa người dùng</h2>
     <form *ngIf="form" (ngSubmit)="onSubmit()" class="user-form">
@@ -43,7 +41,6 @@ import { RoleService, Role } from '../../services/role.service';
     </form>
   `,
   styles: [`
-    /* Giữ nguyên CSS cũ của bạn, thêm style cho nz-select nếu cần */
     nz-select { width: 100%; }
     .user-form { max-width: 500px; background: #fff; padding: 24px; border-radius: 8px; }
     .form-group { margin-bottom: 16px; }

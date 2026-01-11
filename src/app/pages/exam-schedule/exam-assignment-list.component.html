@@ -6,6 +6,20 @@
     <button class="retry-btn" (click)="fetchSchedules()">Thử lại</button>
   </div>
 
+  <div class="search-filter-section" *ngIf="!error && !loading">
+    <div class="search-box">
+      <i class="search-icon">🔍</i>
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm theo tên HP, mã HP, phòng..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+        class="search-input"
+      />
+      <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">✕</button>
+    </div>
+  </div>
+
   <div *ngIf="loading" class="loading-container">
     <div class="spinner"></div>
     <p>Đang tải dữ liệu...</p>
@@ -28,13 +42,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngIf="loading" class="loading-row">
-          <td colspan="10" class="text-center">Đang tải dữ liệu...</td>
-        </tr>
-        <tr *ngIf="!loading && schedules.length === 0" class="no-data">
+        <tr *ngIf="!loading && filteredSchedules.length === 0" class="no-data">
           <td colspan="10" class="text-center">Không có lịch thi nào</td>
         </tr>
-        <tr *ngFor="let schedule of schedules; let i = index">
+        <tr *ngFor="let schedule of filteredSchedules; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ schedule.courseCode }}</td>
           <td class="course-name">{{ schedule.courseName }}</td>

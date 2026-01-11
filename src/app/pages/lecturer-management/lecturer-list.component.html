@@ -6,13 +6,25 @@
     </div>
   </div>
 
-  <table *ngIf="lecturers.length > 0; else emptyBlock">
+  <div class="search-filter-section">
+    <div class="search-box">
+      <i class="search-icon">🔍</i>
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm theo họ tên, tên đăng nhập..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+        class="search-input"
+      />
+      <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <table *ngIf="filteredLecturers.length > 0; else emptyBlock">
     <thead>
       <tr>
         <th>#</th>
         <th>Họ tên</th>
-        <th>Email</th>
-        <th>Điện thoại</th>
         <th>Khoa</th>
         <th>Chức danh</th>
         <th>Chuyên môn</th>
@@ -20,16 +32,14 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let lecturer of lecturers; let i = index">
-        <td>{{ i + 1 }}</td>
+      <tr *ngFor="let lecturer of filteredLecturers; let i = index">
+        <td>{{ currentPage * pageSize + i + 1 }}</td>
         <td><span class="lecturer-name">{{ lecturer.fullName }}</span></td>
-        <td>{{ lecturer.email }}</td>
-        <td>{{ lecturer.phone || '-' }}</td>
-        <td>{{ lecturer.department?.name || '-' }}</td>
+        <td>{{ lecturer.departmentName || '-' }}</td>
         <td>{{ lecturer.academicTitle || '-' }}</td>
         <td>{{ lecturer.specialization || '-' }}</td>
         <td class="action-cell">
-          <button class="edit-btn" (click)="openAddForm()" [disabled]="!lecturer.id">Sửa</button>
+          <button class="edit-btn" (click)="openAddForm(lecturer.id)" [disabled]="!lecturer.id">Sửa</button>
           <button class="delete-btn" (click)="deleteLecturer(lecturer.id)" [disabled]="!lecturer.id || deleting === lecturer.id">
             {{ deleting === lecturer.id ? 'Đang xóa...' : 'Xóa' }}
           </button>
@@ -43,6 +53,53 @@
   </ng-template>
 
   <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="totalPages > 1 || totalElements > 0">
+    <div class="pagination-header">
+      <div class="pagination-info">
+        Hiển thị {{ currentPage * pageSize + 1 }} đến {{ Math.min((currentPage + 1) * pageSize, totalElements) }} 
+        trên tổng số {{ totalElements }} giảng viên
+      </div>
+      
+      <div class="page-size-selector">
+        <label for="pageSize">Hiển thị:</label>
+        <select 
+          id="pageSize"
+          [(ngModel)]="pageSize" 
+          (change)="onPageSizeChange()"
+          class="page-size-select">
+          <option *ngFor="let size of pageSizeOptions" [value]="size">
+            {{ size }} mục
+          </option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button 
+        class="page-btn" 
+        (click)="previousPage()" 
+        [disabled]="currentPage === 0">
+        ← Trước
+      </button>
+
+      <button 
+        *ngFor="let page of getPageNumbers()"
+        class="page-btn"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page + 1 }}
+      </button>
+
+      <button 
+        class="page-btn" 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages - 1">
+        Tiếp → 
+      </button>
+    </div>
+  </div>
 
   <app-lecturer-add 
     *ngIf="showAddForm" 

@@ -1,49 +1,81 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { LecturerService } from '../../services/lecturer.service';
+import { NotificationService } from '../../services/notification.service';
+import { LecturerService, Page } from '../../services/lecturer.service';
 import { LecturerAddComponent } from './lecturer-add.component';
 import { Lecturer } from '../../models/lecturer.models';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-lecturer-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, LecturerAddComponent],
+  imports: [CommonModule, RouterModule, LecturerAddComponent, FormsModule],
   templateUrl: './lecturer-list.component.html',
   styleUrls: ['./lecturer-list.component.css']
 })
 export class LecturerListComponent implements OnInit {
   lecturers: Lecturer[] = [];
+  filteredLecturers: Lecturer[] = [];
   loading = false;
   deleting: number | null = null;
   showAddForm = false;
   editingLecturerId: number | null = null;
+  searchQuery: string = '';
+
+  // Pagination properties
+  currentPage: number = 0;
+  pageSize: number = 10;
+  totalElements: number = 0;
+  totalPages: number = 0;
+  sortBy: string = 'id';
+  sortDirection: string = 'ASC';
+  Math = Math;
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
 
   constructor(
     private lecturerService: LecturerService,
-    private message: NzMessageService
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
-    this.fetchLecturers();
+    this.fetchLecturersPaginated();
+  }
+
+  fetchLecturersPaginated() {
+    this.loading = true;
+    if (this.searchQuery.trim()) {
+      this.lecturerService.searchLecturers(this.searchQuery, this.currentPage, this.pageSize).subscribe({
+        next: (page: Page<Lecturer>) => this.handlePageResponse(page),
+        error: () => this.handleError()
+      });
+    } else {
+      this.lecturerService.getLecturersPaginated(this.currentPage, this.pageSize, this.sortBy, this.sortDirection).subscribe({
+        next: (page: Page<Lecturer>) => this.handlePageResponse(page),
+        error: () => this.handleError()
+      });
+    }
+  }
+
+  handlePageResponse(page: Page<Lecturer>) {
+    this.lecturers = page.content || [];
+    this.filteredLecturers = this.lecturers;
+    this.totalElements = page.totalElements;
+    this.totalPages = page.totalPages;
+    this.loading = false;
+  }
+
+  handleError() {
+    this.loading = false;
   }
 
   fetchLecturers() {
-    this.loading = true;
-    this.lecturerService.getAll().subscribe({
-      next: (data) => {
-        this.lecturers = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
+    this.currentPage = 0;
+    this.fetchLecturersPaginated();
   }
 
-  openAddForm() {
-    this.editingLecturerId = null;
+  openAddForm(id?: number) {
+    this.editingLecturerId = id || null;
     this.showAddForm = true;
   }
 
@@ -57,21 +89,74 @@ export class LecturerListComponent implements OnInit {
     this.fetchLecturers();
   }
 
+  onSearchChange() {
+    this.currentPage = 0;
+    this.fetchLecturersPaginated();
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.currentPage = 0;
+    this.fetchLecturersPaginated();
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.fetchLecturersPaginated();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.fetchLecturersPaginated();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.fetchLecturersPaginated();
+    }
+  }
+
   deleteLecturer(id: number) {
     if (!confirm('Bạn có chắc chắn muốn xóa giảng viên này?')) return;
 
     this.deleting = id;
     this.lecturerService.delete(id).subscribe({
       next: () => {
-        this.lecturers = this.lecturers.filter(l => l.id !== id);
         this.deleting = null;
-        this.message.success('Xóa giảng viên thành công!');
+        this.notificationService.success('Xóa giảng viên thành công!');
+        this.fetchLecturersPaginated();
       },
       error: (err) => {
-        this.message.error('Xóa giảng viên thất bại!');
+        this.notificationService.error('Xóa giảng viên thất bại!');
         this.deleting = null;
         console.error(err);
       }
     });
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let startPage = Math.max(0, this.currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxVisible);
+    
+    if (endPage - startPage < maxVisible) {
+      startPage = Math.max(0, endPage - maxVisible);
+    }
+    
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 0;
+    this.fetchLecturersPaginated();
   }
 }

@@ -4,6 +4,16 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Department, DepartmentRequest, DepartmentResponse } from '../models/department.models';
 
+export interface Page<T> {
+  content: T[];
+  pageable: any;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -71,6 +81,20 @@ export class DepartmentService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => this.getAll().subscribe())
+    );
+  }
+
+  getDepartmentsPaginated(page: number = 0, size: number = 10, sortBy: string = 'id', direction: string = 'ASC'): Observable<Page<Department>> {
+    const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${direction}`;
+    return this.http.get<any>(`${this.apiUrl}/paginated${params}`).pipe(
+      map(response => response.result || response.data || response)
+    );
+  }
+
+  searchDepartments(keyword: string, page: number = 0, size: number = 10): Observable<Page<Department>> {
+    const params = `?keyword=${keyword}&page=${page}&size=${size}`;
+    return this.http.get<any>(`${this.apiUrl}/search${params}`).pipe(
+      map(response => response.result || response.data || response)
     );
   }
 }

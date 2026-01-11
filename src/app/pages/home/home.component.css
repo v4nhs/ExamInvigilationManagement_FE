@@ -36,7 +36,7 @@ body, html {
 .exams-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 16px;
   min-width: 800px;
 }
 
@@ -67,7 +67,7 @@ body, html {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   background-color: #ffe0b2;
   color: #e65100;
@@ -92,7 +92,7 @@ body, html {
   }
 
   .exams-table {
-    font-size: 15px;
+    font-size: 16px;
     min-width: 700px;
   }
 
@@ -108,7 +108,7 @@ body, html {
 
   .badge {
     padding: 6px 12px;
-    font-size: 13px;
+    font-size: 16px;
   }
 }
 
@@ -147,7 +147,7 @@ body, html {
   cursor: pointer;
 }
 .header-links {
-  font-size: 13px;
+  font-size: 16px;
   color: #666;
 }
 .header-links a {
@@ -168,7 +168,7 @@ body, html {
   border: none;
   color: #fff;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   padding: 8px 16px;
   cursor: pointer;
   border-radius: 4px;
@@ -183,7 +183,7 @@ body, html {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .user-menu {
   position: relative;
@@ -198,7 +198,7 @@ body, html {
   gap: 6px;
   color: #fff;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   padding: 6px 12px;
   border-radius: 20px;
   background: none;
@@ -247,7 +247,7 @@ body, html {
 }
 .user-dropdown .user-role {
   padding: 6px 20px 8px 20px;
-  font-size: 14px;
+  font-size: 16px;
   color: #fff;
 }
 .btn-logout {
@@ -256,7 +256,7 @@ body, html {
   border: none;
   color: #fff;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   text-align: left;
   padding: 8px 20px;
   cursor: pointer;
@@ -281,7 +281,7 @@ body, html {
   color: #23408e;
   text-align: center;
   padding: 8px 0;
-  font-size: 15px;
+  font-size: 16px;
 }
 .main-content {
   display: flex;
@@ -335,19 +335,19 @@ body, html {
   flex: 1;
 }
 .news-title {
-  font-size: 14px;
+  font-size: 16px;
   color: #23408e;
   font-weight: 500;
 }
 .news-date {
-  font-size: 12px;
+  font-size: 16px;
   color: #ff0000;
   font-weight: bold;
 }
 .see-all {
   text-align: right;
   color: #009fe3;
-  font-size: 13px;
+  font-size: 16px;
   cursor: pointer;
   margin-top: 5px;
 }
@@ -358,7 +358,7 @@ body, html {
   margin-top: 20px;
 }
 .calendar-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #23408e;
   margin-bottom: 8px;
@@ -370,7 +370,7 @@ body, html {
 }
 .calendar th, .calendar td {
   padding: 4px 0;
-  font-size: 13px;
+  font-size: 16px;
 }
 .calendar td.today {
   background: #ffcc00;
@@ -452,7 +452,7 @@ body, html {
   display: flex;
 }
 .submenu li {
-  font-size: 15px;
+  font-size: 16px;
   padding: 12px 0 12px 0;
   color: #e3e8f3;
   cursor: pointer;
@@ -474,7 +474,7 @@ body, html {
 }
 .sidebar-menu > ul > li > .menu-title:after {
   content: '\25BC';
-  font-size: 12px;
+  font-size: 16px;
   color: #b3c6f7;
   margin-left: auto;
   transition: transform 0.2s;
@@ -536,7 +536,7 @@ body, html {
   border: none;
   border-radius: 6px;
   padding: 10px 22px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(44,62,80,0.08);
@@ -546,3 +546,4 @@ body, html {
   background: linear-gradient(90deg, #ff3d71 0%, #3b5998 100%);
   color: #fff;
 }
+

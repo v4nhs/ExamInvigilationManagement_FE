@@ -4,6 +4,16 @@ import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, tap, timeout, catchError } from 'rxjs/operators';
 import { ExamSchedule, CreateExamScheduleRequest, AssignLecturerRequest, ExamAssignment, AvailableLecturer } from '../models/exam-schedule.models';
 
+export interface Page<T> {
+  content: T[];
+  pageable: any;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ExamScheduleService {
   private apiUrl = 'http://localhost:8080/api/exam-schedules';
@@ -123,6 +133,36 @@ export class ExamScheduleService {
     formData.append('file', file);
     return this.http.post(`${this.apiUrl}/import`, formData).pipe(
       tap(() => this.getAll().subscribe())
+    );
+  }
+
+  getSchedulesPaginated(page: number = 0, size: number = 10, sortBy: string = 'id', direction: string = 'DESC'): Observable<Page<ExamSchedule>> {
+    const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${direction}`;
+    return this.http.get<any>(`${this.apiUrl}/paginated${params}`).pipe(
+      map((res: any) => res.result || res.data || res)
+    );
+  }
+
+  searchSchedules(keyword: string, page: number = 0, size: number = 10): Observable<Page<ExamSchedule>> {
+    const params = `?keyword=${keyword}&page=${page}&size=${size}`;
+    return this.http.get<any>(`${this.apiUrl}/search${params}`).pipe(
+      map((res: any) => res.result || res.data || res)
+    );
+  }
+
+  getLecturersForSchedule(scheduleId: number): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/${scheduleId}/assigned-lecturers`).pipe(
+      map((res: any) => {
+        if (res.result) return res.result;
+        if (res.data) return res.data;
+        if (res.content) return res.content;
+        if (Array.isArray(res)) return res;
+        return [];
+      }),
+      catchError((err) => {
+        console.error('Error fetching lecturers for schedule:', err);
+        return of([]);
+      })
     );
   }
 }

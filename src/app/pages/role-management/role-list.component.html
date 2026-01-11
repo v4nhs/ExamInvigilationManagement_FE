@@ -1,31 +1,37 @@
 <div class="role-list-container">
   <div class="page-header">
-    <h2>Quản lý vai trò</h2>
-    <button class="add-btn" (click)="openAddForm()">+ Thêm vai trò</button>
+    <h2>Danh sách vai trò</h2>
   </div>
 
-  <table *ngIf="roles.length > 0; else emptyBlock">
+  <div class="search-filter-section">
+    <div class="search-box">
+      <i class="search-icon">🔍</i>
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm theo tên vai trò..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+        class="search-input"
+      />
+      <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <table *ngIf="filteredRoles.length > 0; else emptyBlock">
     <thead>
       <tr>
         <th>#</th>
         <th>Tên vai trò</th>
         <th>Mô tả</th>
-        <th>Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let role of roles; let i = index">
-        <td>{{ i + 1 }}</td>
+      <tr *ngFor="let role of filteredRoles; let i = index">
+        <td>{{ currentPage * pageSize + i + 1 }}</td>
         <td>
           <span class="role-badge">{{ role.name }}</span>
         </td>
         <td>{{ role.description || 'Không có mô tả' }}</td>
-        <td>
-          <button class="edit-btn" (click)="openAddForm()">Sửa</button>
-          <button class="delete-btn" (click)="deleteRole(role)" [disabled]="deleting === role.id">
-            {{ deleting === role.id ? 'Đang xóa...' : 'Xóa' }}
-          </button>
-        </td>
       </tr>
     </tbody>
   </table>
@@ -36,10 +42,50 @@
 
   <div *ngIf="loading" class="loading">Đang tải...</div>
 
-  <app-role-form 
-    *ngIf="showAddForm" 
-    [editRoleId]="editingRoleId"
-    (close)="closeAddForm()" 
-    (saved)="onRoleSaved()">
-  </app-role-form>
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="totalPages > 1 || totalElements > 0">
+    <div class="pagination-header">
+      <div class="pagination-info">
+        Hiển thị {{ currentPage * pageSize + 1 }} đến {{ Math.min((currentPage + 1) * pageSize, totalElements) }} 
+        trên tổng số {{ totalElements }} vai trò
+      </div>
+      
+      <div class="page-size-selector">
+        <label for="pageSize">Hiển thị:</label>
+        <select 
+          id="pageSize"
+          [(ngModel)]="pageSize" 
+          (change)="onPageSizeChange()"
+          class="page-size-select">
+          <option *ngFor="let size of pageSizeOptions" [value]="size">
+            {{ size }} mục
+          </option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button 
+        class="page-btn" 
+        (click)="previousPage()" 
+        [disabled]="currentPage === 0">
+        ← Trước
+      </button>
+
+      <button 
+        *ngFor="let page of getPageNumbers()"
+        class="page-btn"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page + 1 }}
+      </button>
+
+      <button 
+        class="page-btn" 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages - 1">
+        Tiếp → 
+      </button>
+    </div>
+  </div>
 </div>
