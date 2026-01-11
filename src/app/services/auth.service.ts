@@ -54,13 +54,13 @@ export class AuthService {
   saveTokens(accessToken: string, refreshToken: string | null) {
     if (!this.isBrowser()) return;
 
-    // 1. Lưu Access Token (Bắt buộc)
-    localStorage.setItem('token', accessToken);
-    console.log("💾 Đã lưu Access Token vào LocalStorage");
+    // 1. Lưu Access Token (Bắt buộc) - Dùng sessionStorage để xóa khi đóng tab
+    sessionStorage.setItem('token', accessToken);
+    console.log("💾 Đã lưu Access Token vào SessionStorage");
 
-    // 2. Lưu Refresh Token (Nếu có)
+    // 2. Lưu Refresh Token (Nếu có) - Dùng sessionStorage
     if (refreshToken && refreshToken !== 'null') {
-      localStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem('refreshToken', refreshToken);
       console.log("💾 Đã lưu Refresh Token");
     } else {
       console.warn("⚠️ Cảnh báo: Server trả về refreshToken là NULL. Tính năng tự gia hạn token sẽ không hoạt động.");
@@ -73,7 +73,9 @@ export class AuthService {
   // --- 2. ĐĂNG XUẤT ---
   logout(): void {
     if (this.isBrowser()) {
-      localStorage.clear();
+      // Xóa tokens từ sessionStorage, giữ lại remember_me trong localStorage
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('refreshToken');
     }
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
@@ -97,23 +99,55 @@ export class AuthService {
 
   getToken(): string | null {
     if (!this.isBrowser()) return null;
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   }
 
   getRefreshToken(): string | null {
     if (!this.isBrowser()) return null;
-    return localStorage.getItem('refreshToken');
+    return sessionStorage.getItem('refreshToken');
   }
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
+
+  // Role checking methods
+  isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'ROLE_ADMIN';
+  }
+
+  isDepartment(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'ROLE_DEPARTMENT';
+  }
+
+  isAccounting(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'ROLE_ACCOUNTING';
+  }
+
+  isLecturer(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'ROLE_LECTURER';
+  }
+
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    const normalizedRole = role.startsWith('ROLE_') ? role : 'ROLE_' + role.toUpperCase();
+    return user?.role === normalizedRole;
+  }
+
+  hasAnyRole(roles: string[]): boolean {
+    return roles.some(role => this.hasRole(role));
+  }
+
   private loadUserFromToken(): void {
     if (!this.isBrowser()) return;
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
-      console.warn('⚠️ Không tìm thấy token');
+      // Không log warning nếu app vừa khởi động (bình thường lần đầu không có token)
       this.currentUserSubject.next(null);
       return;
     }

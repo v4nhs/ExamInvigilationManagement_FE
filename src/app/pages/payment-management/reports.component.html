@@ -1,4 +1,155 @@
 <div class="reports-container">
-  <h1>Báo cáo</h1>
-  <p>Trang báo cáo sẽ được phát triển sớm.</p>
+  <div class="reports-content">
+    <!-- Page Header -->
+    <div class="reports-header">
+      <h1>Báo Cáo Thanh Toán</h1>
+      <p>Chi tiết báo cáo thanh toán cho giảng viên coi thi</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!loading && !error">
+      <!-- Statistics Summary -->
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-label">Tổng Doanh Thu</div>
+          <div class="summary-value">{{ formatCurrency(totalRevenue) }}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Trung Bình Thanh Toán</div>
+          <div class="summary-value">{{ formatCurrency(averagePayment) }}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Thanh Toán Cao Nhất</div>
+          <div class="summary-value">{{ formatCurrency(maxPayment) }}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Thanh Toán Thấp Nhất</div>
+          <div class="summary-value">{{ formatCurrency(minPayment) }}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Tổng Lần Thanh Toán</div>
+          <div class="summary-value">{{ allPayments.length }}</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Giảng Viên Nhận Thanh Toán</div>
+          <div class="summary-value">{{ topLecturers.length }}</div>
+        </div>
+      </div>
+
+      <!-- Top Lecturers Section -->
+      <div class="report-section">
+        <div class="section-header">
+          <h2>🏆 Top 10 Giảng Viên Nhận Thanh Toán Cao Nhất</h2>
+        </div>
+        <div class="top-lecturers-list">
+          <div *ngFor="let lecturer of topLecturers; let i = index" class="lecturer-item">
+            <div class="rank-badge">{{ i + 1 }}</div>
+            <div class="lecturer-info">
+              <div class="lecturer-name">{{ lecturer.name }}</div>
+              <div class="lecturer-meta">{{ lecturer.count }} lần thanh toán</div>
+            </div>
+            <div class="lecturer-amount">{{ formatCurrency(lecturer.amount) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Report Section -->
+      <div class="report-section">
+        <div class="section-header">
+          <h2>📋 Báo Cáo Chi Tiết</h2>
+          <div class="section-actions">
+            <button class="export-btn" (click)="exportToCSV()">
+              📥 Xuất CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+          <div class="filter-group">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Tìm kiếm giảng viên..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearchChange()"
+            />
+          </div>
+          <div class="filter-group">
+            <select class="status-select" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()">
+              <option value="ALL">Tất cả trạng thái</option>
+              <option value="PAID">Đã thanh toán</option>
+              <option value="PENDING">Chờ thanh toán</option>
+              <option value="CANCELLED">Đã hủy</option>
+              <option value="CHƯA_THANH_TOÁN">Chưa thanh toán</option>
+            </select>
+          </div>
+          <button class="clear-btn" (click)="clearFilters()">🔄 Xóa Bộ Lọc</button>
+        </div>
+
+        <!-- Results Info -->
+        <div class="results-info">
+          Hiển thị {{ filteredPayments.length }} / {{ allPayments.length }} bản ghi
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="table-wrapper">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Mã Khoản</th>
+                <th (click)="changeSortBy('lecturer')" class="sortable">
+                  Giảng Viên
+                  <span class="sort-icon" *ngIf="sortBy === 'lecturer'">
+                    {{ sortDirection === 'DESC' ? '▼' : '▲' }}
+                  </span>
+                </th>
+                <th (click)="changeSortBy('amount')" class="sortable amount-col">
+                  Số Tiền
+                  <span class="sort-icon" *ngIf="sortBy === 'amount'">
+                    {{ sortDirection === 'DESC' ? '▼' : '▲' }}
+                  </span>
+                </th>
+                <th (click)="changeSortBy('status')" class="sortable">
+                  Trạng Thái
+                  <span class="sort-icon" *ngIf="sortBy === 'status'">
+                    {{ sortDirection === 'DESC' ? '▼' : '▲' }}
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of filteredPayments">
+                <td class="id-col">{{ payment.id }}</td>
+                <td>{{ extractLecturerName(payment) }}</td>
+                <td class="amount-col">{{ formatCurrency(payment.totalAmount || 0) }}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    [style.backgroundColor]="getStatusColor(payment.status || 'CHƯA_THANH_TOÁN')"
+                  >
+                    {{ getStatusLabel(payment.status || 'CHƯA_THANH_TOÁN') }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="filteredPayments.length === 0" class="no-data">
+                <td colspan="4">Không có dữ liệu phù hợp</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

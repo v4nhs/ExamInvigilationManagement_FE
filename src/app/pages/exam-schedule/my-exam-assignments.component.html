@@ -1,0 +1,149 @@
+<div class="my-exam-assignments-container">
+  <!-- Header -->
+  <div class="assignments-header">
+    <div class="header-content">
+      <h1>📅 Lịch Thi Của Tôi</h1>
+      <p class="subtitle">Các lịch thi được phân công cho <strong>{{ currentUserName }}</strong></p>
+    </div>
+    <button class="btn btn-primary" (click)="loadMyExamAssignments()">
+      <i class="icon">🔄</i> Làm mới
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    <strong>⚠️ Lỗi:</strong> {{ error }}
+    <button class="btn-close" (click)="error = null">×</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && !error" class="assignments-content">
+    <!-- Search and Sort Bar -->
+    <div class="controls-bar">
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="🔍 Tìm kiếm theo tên môn học, mã môn hoặc phòng..."
+          [(ngModel)]="searchQuery"
+          (keyup)="onSearch()"
+          class="form-control"
+        />
+      </div>
+
+      <div class="sort-controls">
+        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="form-control">
+          <option value="date">Sắp xếp theo ngày</option>
+          <option value="courseName">Sắp xếp theo môn học</option>
+        </select>
+
+        <select [(ngModel)]="sortOrder" (change)="onSortChange()" class="form-control">
+          <option value="desc">Mới nhất trước</option>
+          <option value="asc">Cũ nhất trước</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredSchedules.length === 0 && !loading" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Không có lịch thi nào</h3>
+      <p>Bạn chưa được phân công lịch thi nào. Vui lòng liên hệ phòng quản lý đào tạo.</p>
+    </div>
+
+    <!-- Exams Table -->
+    <div *ngIf="paginatedSchedules.length > 0" class="table-wrapper">
+      <table class="exams-table">
+        <thead>
+          <tr>
+            <th>Môn Học</th>
+            <th>Mã Môn</th>
+            <th>Ngày Thi</th>
+            <th>Thời Gian</th>
+            <th>Phòng Thi</th>
+            <th>Loại Thi</th>
+            <th>Số Sinh Viên</th>
+            <th>Trạng Thái</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let schedule of paginatedSchedules" class="exam-row">
+            <td class="course-name">{{ schedule.courseName }}</td>
+            <td class="course-code">{{ schedule.courseCode }}</td>
+            <td class="exam-date">
+              <div class="date-box">{{ schedule.examDate }}</div>
+              <div class="day-text">{{ schedule.examDay }}</div>
+            </td>
+            <td class="exam-time">
+              {{ schedule.examTime }}
+              <span *ngIf="schedule.endTime" class="end-time">- {{ schedule.endTime }}</span>
+            </td>
+            <td class="room">{{ schedule.room }}</td>
+            <td class="exam-type">
+              <span class="badge badge-primary">{{ schedule.examType }}</span>
+            </td>
+            <td class="student-count">
+              <span class="count-badge">{{ schedule.studentCount }}</span>
+            </td>
+            <td class="status">
+              <span [class]="'badge ' + getStatusBadgeClass(schedule.status)">
+                {{ getStatusText(schedule.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-wrapper">
+      <div class="pagination-info">
+        Hiển thị <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> đến <strong>{{ Math.min(currentPage * pageSize, totalItems) }}</strong> trong <strong>{{ totalItems }}</strong> lịch thi
+      </div>
+
+      <nav class="pagination">
+        <button
+          [disabled]="currentPage === 1"
+          (click)="changePage(currentPage - 1)"
+          class="btn btn-sm"
+        >
+          ← Trước
+        </button>
+
+        <div class="page-numbers">
+          <button
+            *ngFor="let page of pageArray"
+            [class.active]="page === currentPage"
+            (click)="changePage(page)"
+            class="page-btn"
+          >
+            {{ page }}
+          </button>
+        </div>
+
+        <button
+          [disabled]="currentPage === totalPages"
+          (click)="changePage(currentPage + 1)"
+          class="btn btn-sm"
+        >
+          Sau →
+        </button>
+      </nav>
+    </div>
+
+    <!-- Summary Info -->
+    <div *ngIf="filteredSchedules.length > 0" class="summary-info">
+      <div class="info-card">
+        <div class="info-icon">📋</div>
+        <div class="info-text">
+          <strong>{{ filteredSchedules.length }}</strong> lịch thi được phân công
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

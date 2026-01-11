@@ -13,7 +13,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { AuthService } from '../services/auth.service'; 
 // Import interface User để sửa lỗi kiểu dữ liệu (nếu file này tồn tại ở ../models/auth.models)
 // Nếu chưa có file models, bạn có thể xóa dòng import User và dùng 'any' bên dưới
-import { User } from '../models/auth.models'; 
+import { User } from '../models/auth.models';
+import { ChangePasswordComponent } from '../pages/change-password/change-password.component'; 
 
 @Component({
   selector: 'app-main-layout',
@@ -25,7 +26,8 @@ import { User } from '../models/auth.models';
     NzMenuModule,
     NzIconModule,
     NzButtonModule,
-    NzDropDownModule
+    NzDropDownModule,
+    ChangePasswordComponent
   ],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
@@ -35,6 +37,7 @@ export class MainLayoutComponent implements OnInit {
   showDropdown = false;
   isMobile = false;
   sidebarOpen = false;
+  showChangePasswordModal = false;
   
   // Khai báo kiểu dữ liệu rõ ràng (User | null hoặc any)
   currentUser: User | null = null; 
@@ -72,6 +75,15 @@ export class MainLayoutComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  openChangePasswordModal(): void {
+    this.showChangePasswordModal = true;
+    this.showDropdown = false;
+  }
+
+  closeChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
+  }
+
   // ===== ROLE CHECKING METHODS =====
   hasRole(role: string): boolean {
     if (!this.currentUser) {
@@ -107,6 +119,10 @@ export class MainLayoutComponent implements OnInit {
     return this.hasRole('ROLE_ACCOUNTING');
   }
 
+  isLecturer(): boolean {
+    return this.hasRole('ROLE_LECTURER');
+  }
+
   checkIfMobile(): void {
     this.isMobile = window.innerWidth <= 768;
     if (!this.isMobile) {
@@ -120,6 +136,23 @@ export class MainLayoutComponent implements OnInit {
 
   isStaffOrAbove(): boolean {
     return this.hasAnyRole('ROLE_ADMIN', 'ROLE_DEPARTMENT', 'ROLE_STAFF');
+  }
+
+  // ===== ROLE DESCRIPTION MAPPING =====
+  private roleDescriptionMap: { [key: string]: string } = {
+    'ROLE_ADMIN': 'Quản trị viên',
+    'ROLE_DEPARTMENT': 'Quản lý khoa',
+    'ROLE_ACCOUNTING': 'Kế toán',
+    'ROLE_LECTURER': 'Giảng viên',
+    'ROLE_USER': 'Người dùng'
+  };
+
+  getRoleDescription(role: string | undefined): string {
+    if (!role) return 'Người dùng';
+    const upperRole = role.toUpperCase();
+    // If role doesn't have ROLE_ prefix, add it
+    const fullRole = upperRole.startsWith('ROLE_') ? upperRole : `ROLE_${upperRole}`;
+    return this.roleDescriptionMap[fullRole] || 'Người dùng';
   }
 
   // ===== PAYMENT MENU CLICK HANDLERS =====

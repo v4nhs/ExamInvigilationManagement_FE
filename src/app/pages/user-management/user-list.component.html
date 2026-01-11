@@ -23,6 +23,7 @@
       <tr>
         <th>#</th>
         <th>Tên đăng nhập</th>
+        <th>Họ tên</th>
         <th>Email</th>
         <th>Vai trò</th>
         <th>Hành động</th>
@@ -32,6 +33,7 @@
       <tr *ngFor="let user of filteredUsers; let i = index">
         <td>{{ currentPage * pageSize + i + 1 }}</td>
         <td>{{ user.username }}</td>
+        <td>{{ user.firstName }} {{ user.lastName }}</td>
         <td>{{ user.email }}</td>
         <td>
           <span class="role-badge" *ngFor="let role of user.roles; let last = last">
@@ -102,9 +104,16 @@
   </div>
 
   <app-user-add 
-    *ngIf="showAddForm" 
-    [editUserId]="editingUserId"
+    *ngIf="showAddForm"
     (close)="closeAddForm()" 
     (saved)="onUserSaved()">
   </app-user-add>
+
+  <app-user-edit-modal 
+    *ngIf="showEditForm"
+    [userId]="editingUserId"
+    [user]="selectedUser"
+    (close)="closeEditForm()" 
+    (saved)="onUserSaved()">
+  </app-user-edit-modal>
 </div>

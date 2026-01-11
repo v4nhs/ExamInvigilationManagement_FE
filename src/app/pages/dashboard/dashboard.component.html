@@ -1,6 +1,117 @@
 <div class="dashboard-container">
-  <div class="content">
-    <h2>Exam Invigilation Management System</h2>
-    <p>This is the dashboard. You are successfully logged in!</p>
-  </div>
+  <div class="dashboard-content">
+    <!-- Page Header -->
+    <div class="dashboard-header">
+      <h1>Dashboard Tổng Quan</h1>
+      <p>Thống kê tổng quát hệ thống quản lý coi thi</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Statistics Cards -->
+    <div *ngIf="!loading && !error" class="statistics-grid">
+      <!-- Card 1: Exam Schedules -->
+      <div class="stat-card exam-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalExamSchedules }}</div>
+          <div class="stat-label">Lịch Thi</div>
+          <div class="stat-description">Tổng số lịch thi đã lập</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Lecturers -->
+      <div class="stat-card lecturer-card">
+        <div class="stat-icon">👨‍🏫</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalLecturers }}</div>
+          <div class="stat-label">Giảng Viên</div>
+          <div class="stat-description">Tổng số giảng viên trong hệ thống</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Users -->
+      <div class="stat-card user-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalUsers }}</div>
+          <div class="stat-label">Người Dùng</div>
+          <div class="stat-description">Tổng số người dùng đã đăng ký</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Departments -->
+      <div class="stat-card dept-card">
+        <div class="stat-icon">🏢</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalDepartments }}</div>
+          <div class="stat-label">Khoa/Viện</div>
+          <div class="stat-description">Tổng số khoa/viện trong trường</div>
+        </div>
+      </div>
+
+      <!-- Card 5: Personal Exam Schedule (for Lecturers only) -->
+      <div class="stat-card lecturer-schedule-card" *ngIf="isLecturer()" (click)="goToPersonalSchedule()" style="cursor: pointer;">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <div class="stat-label">Xem Lịch Thi</div>
+          <div class="stat-description">Xem lịch thi cá nhân của bạn</div>
+        </div>
+        <div class="stat-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div *ngIf="!loading && !error" class="charts-section">
+      <!-- Lecturer by Department Chart -->
+      <div class="chart-container">
+        <h3>👨‍🏫 Giảng Viên Theo Khoa</h3>
+        <div class="chart-content">
+          <div *ngIf="lecturerByDeptData.length > 0; else noDeptData" class="horizontal-chart">
+            <div *ngFor="let item of lecturerByDeptData; let i = index" class="chart-row">
+              <div class="label">{{ item.name }}</div>
+              <div class="bar-container">
+                <div class="bar" [style.width.%]="item.percentage" [style.backgroundColor]="getBarColor(i)">
+                  <span class="value">{{ item.value }}</span>
+                </div>
+              </div>
+              <div class="percentage">{{ item.percentage }}%</div>
+            </div>
+          </div>
+          <ng-template #noDeptData>
+            <div class="no-data">Không có dữ liệu giảng viên</div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- User by Role Chart -->
+      <div class="chart-container">
+        <h3>👥 Người Dùng Theo Vai Trò</h3>
+        <div class="chart-content">
+          <div *ngIf="userByRoleData.length > 0; else noRoleData" class="horizontal-chart">
+            <div *ngFor="let item of userByRoleData; let i = index" class="chart-row">
+              <div class="label">{{ item.name }}</div>
+              <div class="bar-container">
+                <div class="bar" [style.width.%]="item.percentage" [style.backgroundColor]="getBarColor(i)">
+                  <span class="value">{{ item.value }}</span>
+                </div>
+              </div>
+              <div class="percentage">{{ item.percentage }}%</div>
+            </div>
+          </div>
+          <ng-template #noRoleData>
+            <div class="no-data">Không có dữ liệu người dùng</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
 </div>

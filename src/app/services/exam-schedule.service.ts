@@ -165,4 +165,60 @@ export class ExamScheduleService {
       })
     );
   }
+
+  // Get exam schedules assigned to a specific lecturer by username
+  getMyExamAssignments(lecturerId: string): Observable<ExamSchedule[]> {
+    // Try to get by username directly first. Backend should accept username or numeric ID
+    return this.http.get<any>(`${this.apiUrl}/lecturer/${lecturerId}`).pipe(
+      timeout(10000),
+      map((res: any) => {
+        console.log('Raw API response for my exam assignments:', res);
+        let data = res;
+        if (res.result) data = res.result;
+        else if (res.data) data = res.data;
+        else if (res.content) data = res.content;
+        
+        // Ensure we always return an array
+        if (!Array.isArray(data)) {
+          console.warn('Response is not an array:', data);
+          data = [];
+        }
+        
+        // Map API response to model
+        const mapped = data.map((schedule: any) => ({
+          id: schedule.id,
+          course: schedule.course,
+          courseId: schedule.courseId || schedule.course?.id,
+          courseName: schedule.courseName || schedule.course?.name || '-',
+          courseCode: schedule.courseCode || schedule.course?.code || '-',
+          examDate: schedule.examDate || schedule.exam_date,
+          examDay: schedule.examDay || schedule.exam_day,
+          examTime: schedule.examTime || schedule.exam_time,
+          endTime: schedule.endTime || schedule.end_time,
+          examType: schedule.examType || schedule.exam_type,
+          room: schedule.room,
+          studentCount: schedule.studentCount || schedule.student_count,
+          invigilatorCount: schedule.invigilatorCount || schedule.invigilator_count,
+          description: schedule.description,
+          status: schedule.status || 'PLANNED'
+        }));
+        
+        console.log('Mapped my exam assignments:', mapped);
+        return mapped;
+      }),
+      catchError(err => {
+        console.error('Error fetching my exam assignments:', err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  // Alternative: get lecturer by username (fallback if direct endpoint fails)
+  getLecturerByUsername(username: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/api/lecturers/username/${username}`).pipe(
+      timeout(5000),
+      map((res: any) => res.result || res.data || res),
+      catchError(() => of(null))
+    );
+  }
 }

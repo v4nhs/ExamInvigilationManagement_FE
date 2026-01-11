@@ -18,7 +18,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 export class UserAddComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
-  @Input() editUserId: number | null = null;
 
   form: UserCreationRequest = {
     username: '',
@@ -39,9 +38,6 @@ export class UserAddComponent implements OnInit {
 
   ngOnInit() {
     this.loadRoles();
-    if (this.editUserId) {
-      this.loadUser(this.editUserId);
-    }
   }
 
   loadRoles() {
@@ -57,22 +53,11 @@ export class UserAddComponent implements OnInit {
     });
   }
 
-  loadUser(id: number) {
-    this.loading = true;
-    // For now, we'll just clear and not load - UserService doesn't have getUser method
-    // In the future, implement getUser or use the edit button differently
-    this.loading = false;
-  }
-
   onSubmit() {
     this.loading = true;
-    const request = this.editUserId
-      ? this.userService.updateUser(String(this.editUserId), this.form)
-      : this.userService.createUser(this.form);
-
-    request.subscribe({
+    this.userService.createUser(this.form).subscribe({
       next: () => {
-        this.notificationService.success(this.editUserId ? 'Cập nhật thành công!' : 'Thêm người dùng thành công!');
+        this.notificationService.success('Thêm người dùng thành công!');
         this.loading = false;
         this.saved.emit();
         this.closeDialog();

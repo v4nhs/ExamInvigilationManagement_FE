@@ -1,4 +1,82 @@
 <div class="payouts-container">
-  <h1>Thống kê</h1>
-  <p>Trang thống kê thanh toán sẽ được phát triển sớm.</p>
+  <div class="payouts-content">
+    <!-- Page Header -->
+    <div class="payouts-header">
+      <h1>Thống Kê Thanh Toán</h1>
+      <p>Tổng quát tình hình thanh toán cho giảng viên coi thi</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Statistics Cards -->
+    <div *ngIf="!loading && !error" class="statistics-grid">
+      <!-- Card 1: Total Revenue -->
+      <div class="stat-card revenue-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ formatCurrency(totalRevenue) }}</div>
+          <div class="stat-label">Tổng Doanh Thu</div>
+          <div class="stat-description">Tổng giá trị thanh toán</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Payments -->
+      <div class="stat-card payment-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ totalPayments }}</div>
+          <div class="stat-label">Tổng Thanh Toán</div>
+          <div class="stat-description">Tổng số lần thanh toán</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Paid Amount -->
+      <div class="stat-card paid-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ formatCurrency(paidAmount) }}</div>
+          <div class="stat-label">Đã Thanh Toán</div>
+          <div class="stat-description">Số tiền đã thanh toán</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Pending Amount -->
+      <div class="stat-card pending-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ formatCurrency(pendingAmount) }}</div>
+          <div class="stat-label">Chờ Thanh Toán</div>
+          <div class="stat-description">Số tiền chờ xử lý</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Chart Section -->
+    <div *ngIf="!loading && !error && statusData.length > 0" class="chart-section">
+      <h2>Thống Kê Theo Trạng Thái</h2>
+      <div class="status-chart">
+        <div *ngFor="let item of statusData; let i = index" class="status-item">
+          <div class="status-header">
+            <span class="status-name">{{ item.name }}</span>
+            <span class="status-count">{{ item.value }} lần</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar" [style.width.%]="item.percentage" [style.backgroundColor]="getStatusColor(item.name)">
+              <span class="bar-label">{{ item.percentage }}%</span>
+            </div>
+          </div>
+          <div class="status-amount">{{ formatCurrency(item.amount) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

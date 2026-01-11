@@ -16,9 +16,23 @@ import { FormsModule } from '@angular/forms';
 export class ExamAssignmentListComponent implements OnInit {
   schedules: ExamSchedule[] = [];
   filteredSchedules: ExamSchedule[] = [];
+  paginatedSchedules: ExamSchedule[] = [];
   loading = false;
   error: string | null = null;
   searchQuery: string = '';
+  
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 0;
+  
+  // Sorting
+  sortBy: 'date' | 'courseName' = 'date';
+  sortOrder: 'asc' | 'desc' = 'desc';
+
+  // Make Math available in template
+  Math = Math;
 
   constructor(
     private examScheduleService: ExamScheduleService,
@@ -38,7 +52,7 @@ export class ExamAssignmentListComponent implements OnInit {
       next: (data) => {
         console.log('Schedules loaded:', data);
         this.schedules = Array.isArray(data) ? data : [];
-        this.filteredSchedules = this.schedules;
+        this.applyFiltersAndSort();
         this.loading = false;
         if (this.schedules.length === 0) {
           this.notificationService.info('Không có lịch thi nào');
@@ -81,7 +95,7 @@ export class ExamAssignmentListComponent implements OnInit {
               status: 'PLANNED'
             }
           ];
-          this.filteredSchedules = this.schedules;
+          this.applyFiltersAndSort();
           this.notificationService.info('Sử dụng dữ liệu mẫu vì backend chưa sẵn sàng');
           return;
         }
@@ -95,20 +109,106 @@ export class ExamAssignmentListComponent implements OnInit {
   onSearchChange() {
     if (!this.searchQuery.trim()) {
       this.filteredSchedules = this.schedules;
-      return;
+    } else {
+      const query = this.searchQuery.toLowerCase();
+      this.filteredSchedules = this.schedules.filter(s =>
+        (s.courseName?.toLowerCase().includes(query)) ||
+        (s.courseCode && s.courseCode.toLowerCase().includes(query)) ||
+        (s.room && s.room.toLowerCase().includes(query))
+      );
     }
-
-    const query = this.searchQuery.toLowerCase();
-    this.filteredSchedules = this.schedules.filter(s =>
-      (s.courseName?.toLowerCase().includes(query)) ||
-      (s.courseCode && s.courseCode.toLowerCase().includes(query)) ||
-      (s.room && s.room.toLowerCase().includes(query))
-    );
+    this.currentPage = 1;
+    this.applySort();
+    this.updatePagination();
   }
 
   clearSearch() {
     this.searchQuery = '';
     this.filteredSchedules = this.schedules;
+    this.currentPage = 1;
+    this.applySort();
+    this.updatePagination();
+  }
+
+  applyFiltersAndSort() {
+    this.filteredSchedules = this.schedules;
+    this.currentPage = 1;
+    this.applySort();
+    this.updatePagination();
+  }
+
+  applySort() {
+    if (this.sortBy === 'date') {
+      this.filteredSchedules.sort((a, b) => {
+        const dateA = new Date(a.examDate).getTime();
+        const dateB = new Date(b.examDate).getTime();
+        return this.sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+      });
+    } else if (this.sortBy === 'courseName') {
+      this.filteredSchedules.sort((a, b) => {
+        const nameA = a.courseName?.toLowerCase() || '';
+        const nameB = b.courseName?.toLowerCase() || '';
+        return this.sortOrder === 'desc' 
+          ? nameB.localeCompare(nameA, 'vi')
+          : nameA.localeCompare(nameB, 'vi');
+      });
+    }
+  }
+
+  onSortChange() {
+    this.currentPage = 1;
+    this.applySort();
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalItems = this.filteredSchedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+    
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedSchedules = this.filteredSchedules.slice(startIndex, endIndex);
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPages = Math.min(5, this.totalPages);
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxPages / 2));
+    
+    if (startPage + maxPages - 1 > this.totalPages) {
+      startPage = Math.max(1, this.totalPages - maxPages + 1);
+    }
+    
+    for (let i = 0; i < maxPages; i++) {
+      pages.push(startPage + i);
+    }
+    
+    return pages;
   }
 
   goToAssignment(scheduleId: number): void {

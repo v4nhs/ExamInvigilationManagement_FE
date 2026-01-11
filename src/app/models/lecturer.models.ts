@@ -3,12 +3,15 @@ export interface Lecturer {
   userId: number;
   username: string;
   fullName: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
   department?: any;
   departmentId?: number;
   departmentName?: string;
   academicTitle?: string;
   specialization?: string;
-  user?: { id: number; username: string };
+  user?: { id: number; username: string; firstName: string; lastName: string; email: string };
 }
 
 export interface LecturerRequest {

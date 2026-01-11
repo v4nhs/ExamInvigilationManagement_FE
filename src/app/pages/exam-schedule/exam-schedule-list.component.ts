@@ -6,6 +6,7 @@ import { ExamScheduleService, Page } from '../../services/exam-schedule.service'
 import { CourseService } from '../../services/course.service';
 import { DepartmentService } from '../../services/department.service';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
 import { ExamSchedule } from '../../models/exam-schedule.models';
 import { Course } from '../../models/course.models';
 import { Department } from '../../models/department.models';
@@ -39,7 +40,7 @@ export class ExamScheduleListComponent implements OnInit {
   pageSize: number = 10;
   totalElements: number = 0;
   totalPages: number = 0;
-  sortBy: string = 'id';
+  sortBy: string = 'examDate';
   sortDirection: string = 'DESC';
   Math = Math;
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
@@ -49,6 +50,7 @@ export class ExamScheduleListComponent implements OnInit {
     private courseService: CourseService,
     private departmentService: DepartmentService,
     private notificationService: NotificationService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -114,6 +116,11 @@ export class ExamScheduleListComponent implements OnInit {
 
   clearSearch() {
     this.searchQuery = '';
+    this.currentPage = 0;
+    this.fetchSchedulesPaginated();
+  }
+
+  onSortChange() {
     this.currentPage = 0;
     this.fetchSchedulesPaginated();
   }
@@ -264,5 +271,12 @@ export class ExamScheduleListComponent implements OnInit {
     this.showLecturerModal = false;
     this.selectedScheduleForLecturers = null;
     this.lecturerList = [];
+  }
+
+  isAdmin(): boolean {
+    const user = this.authService.getCurrentUser();
+    const isAdminUser = this.authService.isAdmin();
+    console.log('🔍 isAdmin() check - User:', user, 'isAdmin:', isAdminUser);
+    return isAdminUser;
   }
 }

@@ -27,19 +27,22 @@
         <span>|</span>
         <a href="#">Sơ đồ trang</a>
       </nav>
-      <div class="hau-search">
-        <input type="text" placeholder="Tìm kiếm" />
-        <button class="hau-search-btn">&#128269;</button>
-      </div>
       <div class="hau-account" *ngIf="currentUser; else loginBlock">
         <ul class="account-menu">
           <li class="account-name" (click)="showDropdown = !showDropdown">
             {{ currentUser.username }}
             <span style="font-size: 10px; margin-left: 4px;">▼</span>
             <ul class="account-dropdown" *ngIf="showDropdown">
-              <li class="account-role">Vai trò: {{ currentUser.role || 'ADMIN' }}</li>
+              <li class="account-role">Vai trò: {{ getRoleDescription(currentUser.role) }}</li>
               <li class="divider"></li>
-              <li class="account-logout" (click)="logout()">Đăng xuất</li>
+              <li class="account-change-password" (click)="openChangePasswordModal()">
+                <i nz-icon nzType="lock" nzTheme="outline"></i>
+                Đổi mật khẩu
+              </li>
+              <li class="divider"></li>
+              <li class="account-logout" (click)="logout()">
+                Đăng xuất
+              </li>
             </ul>
           </li>
         </ul>
@@ -63,7 +66,15 @@
           <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/exam-schedules" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             Lịch thi
           </li>
+          <li *ngIf="isLecturer() || isDepartment()" nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/my-exam-assignments" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Lịch thi của tôi
+          </li>
         </ul>
+      </li>
+
+      <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *ngIf="isAdmin() || isDepartment() || isAccounting()">
+        <i nz-icon nzType="bar-chart" nzTheme="outline"></i>
+        <span>Thống Kê</span>
       </li>
 
       <li *ngIf="isAdmin() || isDepartment()" nz-submenu nzOpen nzTitle="Phân công coi thi" nzIcon="form">
@@ -88,13 +99,13 @@
         </ul>
       </li>
 
-      <li *ngIf="isAdmin() || isAccounting()" nz-submenu nzOpen nzTitle="Đối soát" nzIcon="bar-chart">
+      <li *ngIf="isAdmin() || isAccounting() || isDepartment() || isLecturer()" nz-submenu nzOpen nzTitle="Đối soát" nzIcon="bar-chart">
         <ul>
           <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/payment" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="onPaymentMenuClick('payment')">
             Danh sách thanh toán
           </li>
-          <li nz-menu-item nzMatchRouter (click)="onPaymentMenuClick('payouts')">
-            <a routerLink="/payouts">Thống kê</a>
+          <li *ngIf="isAdmin() || isAccounting() || isDepartment()" nz-menu-item nzMatchRouter (click)="onPaymentMenuClick('payouts')">
+            <a routerLink="/payouts">Thống kê thanh toán</a>
           </li>
           <li nz-menu-item nzMatchRouter (click)="onPaymentMenuClick('reports')">
             <a routerLink="/reports">Báo cáo</a>
@@ -114,7 +125,7 @@
         </ul>
       </li>
 
-      <li *ngIf="isAdmin()" nz-menu-item nzMatchRouter>
+      <li nz-menu-item nzMatchRouter>
         <a routerLink="/settings">Thiết lập</a>
       </li>
     </ul>
@@ -127,3 +138,6 @@
     </nz-content>
   </nz-layout>
 </nz-layout>
+
+<!-- Change Password Modal -->
+<app-change-password *ngIf="showChangePasswordModal" (closeEvent)="closeChangePasswordModal()"></app-change-password>

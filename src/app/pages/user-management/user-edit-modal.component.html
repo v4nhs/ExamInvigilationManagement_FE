@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="$event.target === $event.currentTarget && closeDialog()">
   <div class="modal-dialog">
     <div class="modal-header">
-      <h2>Thêm người dùng mới</h2>
+      <h2>Chỉnh sửa người dùng</h2>
       <button type="button" class="close-btn" (click)="closeDialog()">
         <i class="icon-close">×</i>
       </button>
@@ -11,7 +11,13 @@
       <form *ngIf="!loading" (ngSubmit)="onSubmit()" #userForm="ngForm">
         <div class="form-item">
           <label>Tên đăng nhập:</label>
-          <input name="username" [(ngModel)]="form.username" required placeholder="admin_01" />
+          <input 
+            name="username" 
+            [(ngModel)]="form.username" 
+            disabled 
+            class="disabled-input"
+            [value]="form.username"
+          />
         </div>
 
         <div class="form-row">
@@ -28,11 +34,6 @@
         <div class="form-item">
           <label>Email:</label>
           <input name="email" [(ngModel)]="form.email" required type="email" placeholder="example@domain.com" />
-        </div>
-
-        <div class="form-item">
-          <label>Mật khẩu:</label>
-          <input name="password" [(ngModel)]="form.password" required type="password" />
         </div>
 
         <div class="form-item">
@@ -59,7 +60,7 @@
     <div class="modal-footer">
       <button type="button" class="cancel-btn" (click)="closeDialog()">Hủy</button>
       <button type="submit" class="submit-btn" (click)="onSubmit()" [disabled]="loading">
-        {{ loading ? 'Đang lưu...' : 'Thêm mới' }}
+        {{ loading ? 'Đang lưu...' : 'Cập nhật' }}
       </button>
     </div>
   </div>

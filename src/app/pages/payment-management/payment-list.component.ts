@@ -82,6 +82,12 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     this.totalElements = page.totalElements;
     this.totalPages = page.totalPages;
     this.loading = false;
+    
+    // Log full payment structure for debugging
+    console.log('Full payments:', this.payments);
+    if (this.payments.length > 0) {
+      console.log('First payment object:', JSON.stringify(this.payments[0], null, 2));
+    }
   }
 
   handleError(err: any) {
@@ -171,7 +177,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   }
 
   getStatusLabel(status: string): string {
-    if (!status) return 'Không xác định';
+    if (!status) return 'Chưa thanh toán';
     const statusMap: { [key: string]: string } = {
       'PAID': 'Đã thanh toán',
       'PENDING': 'Chờ thanh toán',

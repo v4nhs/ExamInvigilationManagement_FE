@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { UserAddComponent } from './user-add.component';
+import { UserEditModalComponent } from './user-edit-modal.component';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, UserAddComponent, FormsModule],
+  imports: [CommonModule, RouterModule, UserAddComponent, UserEditModalComponent, FormsModule],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
@@ -19,7 +20,9 @@ export class UserListComponent implements OnInit {
   loading = false;
   deleting: string | null = null;
   showAddForm = false;
+  showEditForm = false;
   editingUserId: number | null = null;
+  selectedUser: User | null = null;
   searchQuery: string = '';
 
   // Pagination properties
@@ -91,8 +94,22 @@ export class UserListComponent implements OnInit {
     this.editingUserId = null;
   }
 
+  openEditForm(userId?: number) {
+    if (userId !== undefined) {
+      this.editingUserId = userId;
+    }
+    this.showEditForm = true;
+  }
+
+  closeEditForm() {
+    this.showEditForm = false;
+    this.editingUserId = null;
+    this.selectedUser = null;
+  }
+
   onUserSaved() {
     this.closeAddForm();
+    this.closeEditForm();
     this.loadUsers();
   }
 
@@ -129,7 +146,10 @@ export class UserListComponent implements OnInit {
   }
 
   editUser(user: User) {
-    this.openAddForm(user.id);
+    console.log('Editing user:', user);
+    this.selectedUser = user;
+    this.editingUserId = typeof user.id === 'string' ? parseInt(user.id, 10) : user.id;
+    this.openEditForm();
   }
 
   deleteUser(user: User) {

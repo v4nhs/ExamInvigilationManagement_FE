@@ -18,6 +18,19 @@
       />
       <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">✕</button>
     </div>
+
+    <div class="sort-controls">
+      <label for="sortBy">Sắp xếp theo:</label>
+      <select [(ngModel)]="sortBy" (change)="onSortChange()" id="sortBy" class="sort-select">
+        <option value="date">Ngày thi</option>
+        <option value="courseName">Tên HP</option>
+      </select>
+
+      <select [(ngModel)]="sortOrder" (change)="onSortChange()" class="sort-select">
+        <option value="desc">Mới nhất</option>
+        <option value="asc">Cũ nhất</option>
+      </select>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-container">
@@ -42,11 +55,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngIf="!loading && filteredSchedules.length === 0" class="no-data">
+        <tr *ngIf="!loading && paginatedSchedules.length === 0" class="no-data">
           <td colspan="10" class="text-center">Không có lịch thi nào</td>
         </tr>
-        <tr *ngFor="let schedule of filteredSchedules; let i = index">
-          <td>{{ i + 1 }}</td>
+        <tr *ngFor="let schedule of paginatedSchedules; let i = index">
+          <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
           <td>{{ schedule.courseCode }}</td>
           <td class="course-name">{{ schedule.courseName }}</td>
           <td>{{ schedule.examDay }}</td>
@@ -67,5 +80,38 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        <p>Hiển thị {{ (currentPage - 1) * pageSize + 1 }} đến {{ Math.min(currentPage * pageSize, totalItems) }} trong {{ totalItems }} mục</p>
+      </div>
+
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          (click)="previousPage()" 
+          [disabled]="currentPage === 1">
+          ← Trước
+        </button>
+
+        <div class="page-numbers">
+          <button 
+            *ngFor="let page of getPageNumbers()" 
+            class="page-btn" 
+            [class.active]="page === currentPage"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        </div>
+
+        <button 
+          class="pagination-btn" 
+          (click)="nextPage()" 
+          [disabled]="currentPage === totalPages">
+          Tiếp →
+        </button>
+      </div>
+    </div>
   </div>
 </div>

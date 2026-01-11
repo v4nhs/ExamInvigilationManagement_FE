@@ -11,6 +11,8 @@ import { Department } from '../../models/department.models';
 interface UserOption {
   id: number;
   username: string;
+  firstName: string;
+  lastName: string;
 }
 
 @Component({
@@ -27,7 +29,6 @@ export class LecturerAddComponent implements OnInit {
 
   lecturer: any = {
     userId: undefined,
-    fullName: '',
     departmentId: undefined,
     academicTitle: '',
     specialization: ''
@@ -73,7 +74,9 @@ export class LecturerAddComponent implements OnInit {
       next: (data: any[]) => {
         this.users = data.map((user: any) => ({
           id: user.id,
-          username: user.username
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName
         }));
         console.log('Users loaded:', this.users);
       },
@@ -108,11 +111,14 @@ export class LecturerAddComponent implements OnInit {
       next: (data: any) => {
         this.lecturer = {
           userId: data.userId,
-          fullName: data.fullName || '',
           departmentId: data.departmentId,
           academicTitle: data.academicTitle || '',
-          specialization: data.specialization || ''
+          specialization: data.specialization || '',
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          user: data.user
         };
+        console.log('Lecturer loaded:', this.lecturer);
         this.loading = false;
       },
       error: (err: any) => {
@@ -159,10 +165,6 @@ export class LecturerAddComponent implements OnInit {
     // Check nếu user này đã được dùng làm lecturer
     if (!this.editLecturerId && this.usedUserIds.has(this.lecturer.userId)) {
       this.notificationService.warning('Người dùng này đã được thêm làm giảng viên!');
-      return false;
-    }
-    if (!this.lecturer.fullName.trim()) {
-      this.notificationService.warning('Vui lòng nhập họ tên');
       return false;
     }
     if (!this.lecturer.departmentId) {

@@ -2,8 +2,8 @@
   <div class="page-header">
     <h2>Lịch thi</h2>
     <div class="header-actions">
-      <button class="add-btn" (click)="openAddForm()">+ Thêm lịch thi</button>
-      <button class="import-btn" (click)="fileInput.click()">⬆ Import từ file</button>
+      <button class="add-btn" (click)="openAddForm()" *ngIf="isAdmin()">+ Thêm lịch thi</button>
+      <button class="import-btn" (click)="fileInput.click()" *ngIf="isAdmin()">⬆ Import từ file</button>
       <input type="file" #fileInput hidden accept=".xlsx,.xls" (change)="onFileSelected($event)" />
     </div>
   </div>
@@ -19,6 +19,19 @@
         class="search-input"
       />
       <button *ngIf="searchQuery" class="clear-btn" (click)="clearSearch()">✕</button>
+    </div>
+
+    <div class="sort-controls">
+      <label for="sortBy">Sắp xếp theo:</label>
+      <select [(ngModel)]="sortBy" (change)="onSortChange()" id="sortBy" class="sort-select">
+        <option value="examDate">Ngày thi</option>
+        <option value="courseName">Tên HP</option>
+      </select>
+
+      <select [(ngModel)]="sortDirection" (change)="onSortChange()" class="sort-select">
+        <option value="DESC">Mới nhất</option>
+        <option value="ASC">Cũ nhất</option>
+      </select>
     </div>
   </div>
 
@@ -54,7 +67,7 @@
           </td>
           <td class="text-center">{{ schedule.invigilatorCount }}</td>
           <td>
-            <button class="action-btn view-lecturers-btn" (click)="viewAssignedLecturers(schedule.id)">
+            <button class="action-btn view-lecturers-btn" (click)="viewAssignedLecturers(schedule.id)" *ngIf="isAdmin()">
               Xem giảng viên
             </button>
           </td>
@@ -193,7 +206,6 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Mã giảng viên</th>
                 <th>Tên giảng viên</th>
                 <th>Email</th>
               </tr>
@@ -201,7 +213,6 @@
             <tbody>
               <tr *ngFor="let lecturer of lecturerList; let i = index">
                 <td>{{ i + 1 }}</td>
-                <td><span class="lecturer-code-badge">{{ lecturer.code || lecturer.lecturerCode || 'N/A' }}</span></td>
                 <td>{{ lecturer.lecturerName || lecturer.fullName || 'N/A' }}</td>
                 <td>{{ lecturer.email || 'N/A' }}</td>
               </tr>

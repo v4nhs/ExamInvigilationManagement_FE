@@ -24,7 +24,8 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Họ tên</th>
+        <th>Tên giảng viên</th>
+        <th>Email</th>
         <th>Khoa</th>
         <th>Chức danh</th>
         <th>Chuyên môn</th>
@@ -34,7 +35,8 @@
     <tbody>
       <tr *ngFor="let lecturer of filteredLecturers; let i = index">
         <td>{{ currentPage * pageSize + i + 1 }}</td>
-        <td><span class="lecturer-name">{{ lecturer.fullName }}</span></td>
+        <td><span class="lecturer-name">{{ lecturer.user?.firstName ? (lecturer.user?.firstName + ' ' + lecturer.user?.lastName) : lecturer.fullName }}</span></td>
+        <td>{{ lecturer.email || lecturer.user?.email || '-' }}</td>
         <td>{{ lecturer.departmentName || '-' }}</td>
         <td>{{ lecturer.academicTitle || '-' }}</td>
         <td>{{ lecturer.specialization || '-' }}</td>

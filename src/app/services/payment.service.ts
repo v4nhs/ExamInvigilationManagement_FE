@@ -13,6 +13,7 @@ export interface PaymentDetailResponse {
 
 export interface PaymentResponse {
   id: number;
+  lecturerId?: number;
   lecturerName: string;
   totalAmount: number;
   status: string;

@@ -1,7 +1,7 @@
 <div class="department-list-container">
   <div class="page-header">
     <h2>Danh sách khoa</h2>
-    <button class="add-btn" (click)="openAddForm()">+ Thêm khoa mới</button>
+    <button class="add-btn" (click)="openAddForm()" *ngIf="!isDepartment()">+ Thêm khoa mới</button>
   </div>
   
   <div class="search-filter-section">
@@ -35,8 +35,8 @@
         <td>{{ d.code }}</td>
         <td>{{ d.description }}</td>
         <td>
-          <button class="edit-btn" (click)="openAddForm(d.id)" [disabled]="!d.id">Sửa</button>
-          <button class="delete-btn" (click)="deleteDepartment(d.id)" [disabled]="!d.id || deleting === d.id">
+          <button class="edit-btn" (click)="openAddForm(d.id)" [disabled]="!d.id" *ngIf="!isDepartment()">Sửa</button>
+          <button class="delete-btn" (click)="deleteDepartment(d.id)" [disabled]="!d.id || deleting === d.id" *ngIf="!isDepartment()">
             {{ deleting === d.id ? 'Đang xóa...' : 'Xóa' }}
           </button>
         </td>

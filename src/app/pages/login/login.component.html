@@ -1,3 +1,10 @@
+<div class="system-header">
+  <div class="system-name">
+    <h1>HỆ THỐNG XẾP LỊCH THI VÀ TÍNH TIỀN COI THI</h1>
+    <p>TRƯỜNG ĐẠI HỌC KIẾN TRÚC HÀ NỘI</p>
+  </div>
+</div>
+
 <div class="login-box">
 
   <div class="login-image">
@@ -21,9 +28,14 @@
 
         <nz-form-item>
           <nz-form-control nzErrorTip="Vui lòng nhập mật khẩu!">
-            <nz-input-group nzPrefixIcon="lock">
-              <input type="password" nz-input formControlName="password" placeholder="Mật khẩu" />
+            <nz-input-group nzPrefixIcon="lock" [nzSuffix]="suffixTemplate">
+              <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="password" placeholder="Mật khẩu" />
             </nz-input-group>
+            <ng-template #suffixTemplate>
+              <span class="eye-icon" (click)="togglePasswordVisibility()" [class.eye-visible]="passwordVisible">
+                <i nz-icon [nzType]="passwordVisible ? 'eye' : 'eye-invisible'" nzTheme="outline"></i>
+              </span>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 

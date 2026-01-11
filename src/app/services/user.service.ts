@@ -41,8 +41,14 @@ export class UserService {
   }
 
   getUserById(id: string): Observable<User> {
+    console.log('Calling getUserById with id:', id);
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-      map(response => response.result || response)
+      map(response => {
+        console.log('getUserById response:', response);
+        if (response.result) return response.result;
+        if (response.data) return response.data;
+        return response;
+      })
     );
   }
 
@@ -55,10 +61,21 @@ export class UserService {
   }
 
   // 5. Khi sửa, tự động kích hoạt tải lại danh sách
-  updateUser(id: string, request: UserUpdateRequest): Observable<User> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, request).pipe(
-      map(response => response.result || response),
-      tap(() => this.getUsers().subscribe())
+  updateUser(id: string, request: any): Observable<any> {
+    const url = `${this.apiUrl}/${id}`;
+    console.log('Updating user at URL:', url);
+    console.log('Request data:', JSON.stringify(request));
+    return this.http.put<any>(url, request).pipe(
+      map(response => {
+        console.log('Update response:', response);
+        if (response.result) return response.result;
+        if (response.data) return response.data;
+        return response;
+      }),
+      tap(() => {
+        console.log('Refreshing user list after update');
+        this.getUsers().subscribe();
+      })
     );
   }
 
@@ -75,7 +92,14 @@ export class UserService {
   getUsersPaginated(page: number = 0, size: number = 10, sortBy: string = 'id', direction: string = 'ASC'): Observable<Page<User>> {
     const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${direction}`;
     return this.http.get<any>(`${this.apiUrl}/paginated${params}`).pipe(
-      map(response => response.result || response.data || response)
+      map(response => {
+        const result = response.result || response.data || response;
+        console.log('getUsersPaginated response:', result);
+        if (result.content) {
+          console.log('First user from paginated:', result.content[0]);
+        }
+        return result;
+      })
     );
   }
 

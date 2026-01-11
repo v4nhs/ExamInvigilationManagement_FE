@@ -3,9 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { LecturerService, Page } from '../../services/lecturer.service';
+import { UserService } from '../../services/user.service';
 import { LecturerAddComponent } from './lecturer-add.component';
 import { Lecturer } from '../../models/lecturer.models';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-lecturer-list',
@@ -22,6 +24,7 @@ export class LecturerListComponent implements OnInit {
   showAddForm = false;
   editingLecturerId: number | null = null;
   searchQuery: string = '';
+  userEmailMap: Map<number, string> = new Map(); // Cache user emails
 
   // Pagination properties
   currentPage: number = 0;
@@ -35,10 +38,12 @@ export class LecturerListComponent implements OnInit {
 
   constructor(
     private lecturerService: LecturerService,
+    private userService: UserService,
     private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
+    // Just fetch lecturers directly, backend should provide user.email
     this.fetchLecturersPaginated();
   }
 
@@ -63,6 +68,9 @@ export class LecturerListComponent implements OnInit {
     this.totalElements = page.totalElements;
     this.totalPages = page.totalPages;
     this.loading = false;
+    
+    // Log for debugging
+    console.log('Lecturers loaded:', this.lecturers);
   }
 
   handleError() {
@@ -98,6 +106,17 @@ export class LecturerListComponent implements OnInit {
     this.searchQuery = '';
     this.currentPage = 0;
     this.fetchLecturersPaginated();
+  }
+
+  getEmail(lecturer: Lecturer): string {
+    // Try to get email from multiple sources
+    console.log(`getEmail for ${lecturer.fullName}:`, {
+      'user': lecturer.user,
+      'user.email': lecturer.user?.email,
+      'lecturer.email': lecturer.email,
+      'lecturer object': lecturer
+    });
+    return lecturer.user?.email || lecturer.email || '-';
   }
 
   previousPage() {

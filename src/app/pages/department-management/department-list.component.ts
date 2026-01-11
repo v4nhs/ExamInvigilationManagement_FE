@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { DepartmentService, Page } from '../../services/department.service';
+import { AuthService } from '../../services/auth.service';
 import { DepartmentAddComponent } from './department-add.component';
 import { Department } from '../../models/department.models';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +37,8 @@ export class DepartmentListComponent implements OnInit {
 
   constructor(
     private departmentService: DepartmentService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -165,5 +167,9 @@ export class DepartmentListComponent implements OnInit {
   onPageSizeChange() {
     this.currentPage = 0;
     this.fetchDepartmentsPaginated();
+  }
+
+  isDepartment(): boolean {
+    return this.authService.isDepartment();
   }
 }
