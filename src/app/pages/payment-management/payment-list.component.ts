@@ -123,8 +123,12 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     }
   }
 
-  viewDetails(paymentId: number) {
-    this.router.navigate(['/payment', paymentId]);
+  viewDetails(payment: PaymentResponse) {
+    if (payment.lecturerId) {
+      this.router.navigate(['/payment', payment.lecturerId]);
+    } else {
+      this.notificationService.error('Không tìm thấy ID giảng viên');
+    }
   }
 
   deletePayment(id: number) {

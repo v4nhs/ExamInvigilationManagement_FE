@@ -66,7 +66,7 @@
           <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/exam-schedules" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             Lịch thi
           </li>
-          <li *ngIf="isLecturer() || isDepartment()" nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/my-exam-assignments" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <li *ngIf="isLecturer()" nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/my-exam-assignments" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             Lịch thi của tôi
           </li>
         </ul>

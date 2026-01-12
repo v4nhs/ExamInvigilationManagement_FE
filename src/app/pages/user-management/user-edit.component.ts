@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NzSelectModule } from 'ng-zorro-antd/select'; 
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzNotificationModule, NzNotificationService } from 'ng-zorro-antd/notification';
 import { UserService, UserUpdateRequest } from '../../services/user.service';
 import { RoleService, Role } from '../../services/role.service';
 
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, NzSelectModule], 
+  imports: [CommonModule, FormsModule, NzSelectModule, NzNotificationModule],
   template: `
     <h2>Sửa người dùng</h2>
     <form *ngIf="form" (ngSubmit)="onSubmit()" class="user-form">
@@ -61,11 +62,11 @@ export class UserEditComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private roleService: RoleService,
-    private router: Router
+    private router: Router,
+    private notification: NzNotificationService
   ) {}
 
   ngOnInit() {
-    // Load danh sách Roles
     this.roleService.getRoles().subscribe(roles => this.roles = roles);
 
     this.id = this.route.snapshot.paramMap.get('id')!;
@@ -74,7 +75,6 @@ export class UserEditComponent implements OnInit {
         this.form = {
           username: u.username,
           email: u.email,
-          // 4. Map danh sách roles object thành mảng ID: [1, 2, 5]
           roleIds: u.roles ? u.roles.map(r => r.id) : [] 
         };
       });
@@ -85,15 +85,18 @@ export class UserEditComponent implements OnInit {
     if (this.id && this.form) {
       const updateData: UserUpdateRequest = {
         email: this.form.email,
-        roleIds: this.form.roleIds // Gửi mảng ID lên server
+        roleIds: this.form.roleIds
       };
 
       this.userService.updateUser(this.id, updateData).subscribe({
         next: () => {
-          alert('Cập nhật thành công!');
+          this.notification.success('Thành công', 'Cập nhật người dùng thành công!');
           this.goToList();
         },
-        error: (err) => console.error(err)
+        error: (err) => {
+          this.notification.error('Lỗi', 'Cập nhật người dùng thất bại!');
+          console.error(err);
+        }
       });
     }
   }

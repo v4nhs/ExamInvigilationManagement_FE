@@ -38,7 +38,7 @@
           </span>
         </td>
         <td>
-          <button class="view-btn" (click)="viewDetails(payment.id)">Xem chi tiết</button>
+          <button class="view-btn" (click)="viewDetails(payment)">Xem chi tiết</button>
           <button class="delete-btn" (click)="deletePayment(payment.id)" [disabled]="deleting === payment.id">
             {{ deleting === payment.id ? 'Đang xóa...' : 'Xóa' }}
           </button>
