@@ -61,6 +61,11 @@
   <nz-sider class="menu-sidebar" [ngClass]="{ 'open': sidebarOpen }" nzCollapsible nzWidth="256px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
     [nzTrigger]="null">
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *ngIf="isAdmin() || isDepartment() || isAccounting()">
+        <i nz-icon nzType="bar-chart" nzTheme="outline"></i>
+        <span>Thống Kê</span>
+      </li>
+
       <li nz-submenu nzOpen nzTitle="Lịch thi sinh viên" nzIcon="schedule">
         <ul>
           <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/exam-schedules" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
@@ -70,11 +75,6 @@
             Lịch thi của tôi
           </li>
         </ul>
-      </li>
-
-      <li nz-menu-item nzMatchRouter [nzMatchRouterExact]="true" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *ngIf="isAdmin() || isDepartment() || isAccounting()">
-        <i nz-icon nzType="bar-chart" nzTheme="outline"></i>
-        <span>Thống Kê</span>
       </li>
 
       <li *ngIf="isAdmin() || isDepartment()" nz-submenu nzOpen nzTitle="Phân công coi thi" nzIcon="form">

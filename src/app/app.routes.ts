@@ -4,10 +4,10 @@ import { authGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-  // 1. Chuyển hướng mặc định về trang lịch thi
+  // 1. Chuyển hướng mặc định về trang thống kê
   {
     path: '',
-    redirectTo: '/exam-schedules',
+    redirectTo: '/dashboard',
     pathMatch: 'full'
   },
   

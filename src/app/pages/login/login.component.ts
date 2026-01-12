@@ -132,7 +132,7 @@ export class LoginComponent implements OnInit {
             this.notificationService.success(`👋 Chào mừng ${this.validateForm.value.username}! Đăng nhập thành công`, 2000);
 
             // 3. CHUYỂN TRANG
-            this.router.navigate(['/exam-schedules']).then(() => {
+            this.router.navigate(['/dashboard']).then(() => {
               console.log('✅ Navigation successful');
             }).catch((err) => {
               console.error('❌ Navigation failed:', err);
